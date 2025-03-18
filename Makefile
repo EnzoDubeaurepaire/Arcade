@@ -48,3 +48,6 @@ fclean_core:	clean_core
 	rm -rf $(NAME)
 
 re:	fclean all
+
+tests_run:
+	echo "No Tests"
