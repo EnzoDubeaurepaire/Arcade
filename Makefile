@@ -8,33 +8,38 @@
 NAME	=	arcade
 
 CORE_SRC	=	src/main.cpp \
-				src/Loader/Loader.cpp \
-				src/Interfaces/IDisplayModule.cpp
+				src/Loader/Loader.cpp
 
 OBJ	=	$(CORE_SRC:.cpp=.o)
 
-LIBS	=
+GAME_LIBS	=	
+
+DISPLAY_LIBS	=
 
 CXXFLAGS	+=	-Wall -Werror -Wextra
 CXXFLAGS	+=	-fno-gnu-unique -std=c++20 -ldl
-CXXFLAGS	+=	-I ./src/Loader -I ./src/Interfaces
+CXXFLAGS	+=	-I ./src/Loader -I ./src/Games -I ./src/DisplayModules -I ./src/Core
 
 CC	=	g++
 
 all: $(NAME)
 
-$(NAME):	build_libs build_core
+$(NAME):	games graphicals core
 
-build_libs:
-	$(foreach lib, $(LIBS), make -C $(lib);)
+games:
+	$(foreach lib, $(GAME_LIBS), make -C $(lib);)
 
-build_core:	$(OBJ)
+graphicals:
+	$(foreach lib, $(DISPLAY_LIBS), make -C $(lib);)
+
+core:	$(OBJ)
 	$(CC) -o $(NAME) $(OBJ)
 
 clean:	clean_libs clean_core
 
 clean_libs:
-	$(foreach lib, $(LIBS), make -C $(lib) clean;)
+	$(foreach lib, $(GAME_LIBS), make -C $(lib) clean;)
+	$(foreach lib, $(DISPLAY_LIBS), make -C $(lib) clean;)
 
 clean_core:
 	rm -rf $(OBJ)
@@ -42,7 +47,8 @@ clean_core:
 fclean:	fclean_libs fclean_core
 
 fclean_libs:
-	$(foreach lib, $(LIBS), make -C $(lib) fclean;)
+	$(foreach lib, $(GAME_LIBS), make -C $(lib) fclean;)
+	$(foreach lib, $(DISPLAY_LIBS), make -C $(lib) fclean;)
 
 fclean_core:	clean_core
 	rm -rf $(NAME)
