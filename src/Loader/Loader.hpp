@@ -7,8 +7,10 @@
 
 #ifndef LOADER_H
 #define LOADER_H
+#include <any>
 #include <iostream>
 #include <dlfcn.h>
+#include <memory>
 
 class DynamicLibrary {
 public:
@@ -23,12 +25,14 @@ public:
 
     // Constructor
     explicit DynamicLibrary(const std::string& path);
+    DynamicLibrary() {handle = nullptr;};
     // Destructor
     ~DynamicLibrary();
 
     // Symbol getter
-    template <typename T>
-    T getSymbol(const std::string& symbolName);
+    void *getSymbol(const std::string& symbolName) const;
+
+    bool isLoaded();
 
 private:
     // Handle

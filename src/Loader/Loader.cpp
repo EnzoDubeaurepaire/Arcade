@@ -18,11 +18,20 @@ DynamicLibrary::~DynamicLibrary() {
         dlclose(this->handle);
 }
 
-template <typename T>
-T DynamicLibrary::getSymbol(const std::string& symbolName) {
+void *DynamicLibrary::getSymbol(const std::string& symbolName) const {
     dlerror();
     void *symbol = dlsym(this->handle, symbolName.c_str());
-    if (const char *error = dlerror())
-        throw DynamicLibraryException(error);
-    return reinterpret_cast<T>(symbol);
+    const char *error = dlerror();
+    if (error || symbol == nullptr)
+        return nullptr;
+    return symbol;
 }
+
+bool DynamicLibrary::isLoaded() {
+    struct link_map *map;
+    if (dlinfo(this->handle, RTLD_DI_LINKMAP, &map) == 0)
+        return true;
+    this->handle = nullptr;
+    return false;
+}
+
