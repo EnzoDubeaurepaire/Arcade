@@ -10,17 +10,18 @@ NAME	=	arcade
 CORE_SRC	=	src/main.cpp \
 				src/Loader/Loader.cpp \
 				src/Core/Core.cpp \
-				src/Core/MainMenu.cpp
+				src/Core/MainMenu/MainMenu.cpp \
+				src/Core/Objects/Sprite.cpp
 
 OBJ	=	$(CORE_SRC:.cpp=.o)
 
-GAME_LIBS	=	
+GAME_LIBS	=	src/DisplayModules/Sfml
 
 DISPLAY_LIBS	=
 
-CXXFLAGS	+=	-Wall -Werror -Wextra
+CXXFLAGS	+=	-Wall -Wextra -Werror -g
 CXXFLAGS	+=	-fno-gnu-unique -std=c++20 -ldl
-CXXFLAGS	+=	-I ./src/Loader -I ./src/Games -I ./src/DisplayModules -I ./src/Core -I ./src/Core/MainMenu
+CXXFLAGS	+=	-I ./src/Loader -I ./src/Games -I ./src/DisplayModules -I ./src/Core -I ./src/Core/MainMenu -I ./src/Core/Objects
 
 CC	=	g++
 

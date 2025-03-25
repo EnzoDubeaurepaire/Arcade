@@ -12,13 +12,14 @@
 #include "MainMenu.hpp"
 
 Core::Core(const std::string& baseDisplay) {
+    this->_loadedGame = "Main Menu";
+    this->_gameModules["Main Menu"] = std::pair(std::make_unique<DynamicLibrary>(), std::make_unique<MainMenu>());
+    this->_loadedDisplay = baseDisplay;
     this->updateLibraries();
     if (!this->isLibLoaded(baseDisplay)) {
         throw CoreException("Could not find or open " + baseDisplay + " library");
     }
-    this->_loadedDisplay = baseDisplay;
-    this->_loadedGame = "Main Menu";
-    this->_gameModules["Main Menu"] = std::pair(std::make_unique<DynamicLibrary>(), std::make_unique<MainMenu>());
+    this->loadDisplay(baseDisplay);
 }
 
 IGameModule& Core::getGame(const std::string& name) {
@@ -66,15 +67,17 @@ void Core::updateLibraries() {
                 if (sym) {
                     auto *gameCreator = reinterpret_cast<std::unique_ptr<IGameModule>(*)()>(sym);
                     auto game = gameCreator();
-                    if (!this->_gameModules.contains(game->getName()))
-                        this->_gameModules[game->getName()] = std::pair(std::make_unique<DynamicLibrary>(lib), std::move(game));
+                    std::string str = game->getName();
+                    if (!this->_gameModules.contains(str))
+                        this->_gameModules[str] = std::pair(std::make_unique<DynamicLibrary>(lib), std::move(game));
                 }
                 sym = lib.getSymbol("createInstanceIDisplay");
                 if (sym) {
                     auto *displayCreator = reinterpret_cast<std::unique_ptr<IDisplayModule>(*)()>(sym);
                     auto display = displayCreator();
-                    if (!this->_displayModules.contains(display->getName()))
-                        this->_displayModules[display->getName()] = std::pair(std::make_unique<DynamicLibrary>(lib), std::move(display));
+                    std::string str = display->getName();
+                    if (!this->_displayModules.contains(str))
+                        this->_displayModules[str] = std::pair(std::make_unique<DynamicLibrary>(lib), std::move(display));
                 }
             } catch (DynamicLibrary::DynamicLibraryException& e) {
                 std::cout << e.what() << std::endl;
@@ -87,9 +90,9 @@ void Core::updateLibraries() {
     for (const auto& lib : this->_displayModules)
         if (!this->isLibLoaded(lib.first))
             this->_displayModules.erase(lib.first);
-    if (this->isLibLoaded(this->_loadedDisplay))
+    if (!this->isLibLoaded(this->_loadedDisplay))
         this->getDisplayFallback();
-    if (this->isLibLoaded(this->_loadedGame))
+    if (!this->isLibLoaded(this->_loadedGame))
         this->getGameFallback();
 }
 
@@ -101,13 +104,17 @@ void Core::handleInputs() {
     switch (input) {
         case CTRL('q'):
             this->_running = false;
+            break;
         case KEY_ESC:
             this->unloadGame(this->_loadedDisplay);
             this->loadGame("Main Menu");
+            break;
         case CTRL('d'):
             this->goToNextDisplay();
+            break;
         case CTRL('g'):
             this->goToNextGame();
+            break;
         default:
             this->getGame(this->_loadedGame).update(mousePos, mouseState, input);
     }

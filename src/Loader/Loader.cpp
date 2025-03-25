@@ -8,7 +8,7 @@
 #include "Loader.hpp"
 
 DynamicLibrary::DynamicLibrary(const std::string& path) {
-    this->handle = dlopen(path.c_str(), RTLD_NOW);
+    this->handle = dlopen(path.c_str(), RTLD_LAZY);
     if (!this->handle)
         throw DynamicLibraryException(dlerror());
 }

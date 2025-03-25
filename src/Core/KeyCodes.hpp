@@ -8,6 +8,8 @@
 #ifndef KEYCODES_H_
 #define KEYCODES_H_
 
+// Defines macros for key codes, using ncurses as a reference
+
 #define KEY_BACKSPACE   8   /* Backspace key */
 #define KEY_BREAK       255 /* Break key */
 #define KEY_DOWN        258 /* Down arrow key */
