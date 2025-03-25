@@ -43,6 +43,13 @@ void SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>& object
             sprite.setTextureRect(rect);
             this->_window->draw(sprite);
         }
+        if (object.second->getType() == "Text") {
+            auto text(any_cast<sf::Text>(object.second->getSprite()));
+            auto font(std::any_cast<sf::Font>(object.second->getTexture()));
+            text.setFont(font);
+            text.setCharacterSize(object.second->getSize().first);
+            this->_window->draw(text);
+        }
     }
     this->_window->display();
 }
@@ -56,6 +63,14 @@ void SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obj
             sprite.setTexture(texture);
             object.second->setTexture(texture);
             object.second->setSprite(sprite);
+        }
+        if (object.second->getType() == "Text") {
+            sf::Font font;
+            font.loadFromFile(object.second->getTexturePath() + "/font.ttf");
+            sf::Text text;
+            text.setFont(font);
+            object.second->setTexture(font);
+            object.second->setSprite(text);
         }
     }
 }
