@@ -55,6 +55,10 @@ public:
     // !! getter returns a reference so the texture properties can be modified by the display module
     virtual std::any& getTexture() = 0;
     virtual void setTexture(std::any) = 0;
+
+    // Text getter and setter
+    virtual std::string getText() = 0;
+    virtual void setText(std::string) = 0;
 };
 
 #endif
