@@ -24,7 +24,6 @@ public:
 
     int getInput() override;
     std::pair<int, int> getMousePos() const override {return {0, 0};};
-    click getMouseState() const override {return NOTHING;};
 
     std::string getName() const override {return "SFML";};
 

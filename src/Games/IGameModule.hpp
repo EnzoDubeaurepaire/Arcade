@@ -35,7 +35,7 @@ public:
     virtual ~IGameModule() = default;
 
     // Update the objects according to the inputs
-    virtual bool update(std::pair<int, int> mousePos, IDisplayModule::click state, int input) = 0;
+    virtual bool update(std::pair<int, int> mousePos, int input) = 0;
 
     // Returns a reference to the objects' list
     virtual std::map<std::string, std::unique_ptr<IObject>>& getObjects() = 0;

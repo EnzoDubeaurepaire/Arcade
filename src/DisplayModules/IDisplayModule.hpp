@@ -33,12 +33,6 @@
 class IDisplayModule
 {
 public:
-    // Enumeration for mouse click states
-    enum click {
-        NOTHING = 0, // No Click
-        RIGHT,       // Right Click
-        LEFT         // Left Click
-    };
 
     // Default virtual destructor
     virtual ~IDisplayModule() = default;
@@ -51,8 +45,6 @@ public:
     virtual int getInput() = 0;
     // Retrieves mouse position
     virtual std::pair<int, int> getMousePos() const = 0;
-    // Retrieves mouse state
-    virtual click getMouseState() const = 0;
 
     // Open the window
     virtual void openWindow() = 0;

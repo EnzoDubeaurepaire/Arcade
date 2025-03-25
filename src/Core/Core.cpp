@@ -99,7 +99,6 @@ void Core::updateLibraries() {
 void Core::handleInputs() {
     const int input = this->getDisplay(this->_loadedDisplay).getInput();
     const std::pair<int, int> mousePos = this->getDisplay(this->_loadedDisplay).getMousePos();
-    const IDisplayModule::click mouseState = this->getDisplay(this->_loadedDisplay).getMouseState();
 
     switch (input) {
         case CTRL('q'):
@@ -116,7 +115,7 @@ void Core::handleInputs() {
             this->goToNextGame();
             break;
         default:
-            this->getGame(this->_loadedGame).update(mousePos, mouseState, input);
+            this->getGame(this->_loadedGame).update(mousePos, input);
     }
 }
 
