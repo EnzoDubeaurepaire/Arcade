@@ -17,7 +17,7 @@
 
 // Names for the display modules :
 #define SFML "SFML"
-#define CURSES "CURSES"
+#define NCURSES "NCURSES"
 #define SDL "SDL"
 #define CACA "CACA"
 #define AA "AA"

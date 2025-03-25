@@ -11,7 +11,8 @@ CORE_SRC	=	src/main.cpp \
 				src/Loader/Loader.cpp \
 				src/Core/Core.cpp \
 				src/Core/MainMenu/MainMenu.cpp \
-				src/Core/Objects/Sprite.cpp
+				src/Core/Objects/Sprite.cpp \
+				src/Core/Objects/Text.cpp
 
 OBJ	=	$(CORE_SRC:.cpp=.o)
 
