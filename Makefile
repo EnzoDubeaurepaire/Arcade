@@ -15,9 +15,9 @@ CORE_SRC	=	src/main.cpp \
 
 OBJ	=	$(CORE_SRC:.cpp=.o)
 
-GAME_LIBS	=	src/DisplayModules/Sfml
+GAME_LIBS	=
 
-DISPLAY_LIBS	=
+DISPLAY_LIBS	=	src/DisplayModules/Sfml
 
 CXXFLAGS	+=	-Wall -Wextra -Werror -g
 CXXFLAGS	+=	-fno-gnu-unique -std=c++20 -ldl
