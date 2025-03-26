@@ -23,6 +23,7 @@ public:
     {
     public:
         explicit CoreException(const std::string &what) : message("Core error : " + what) {};
+        const char* what() const noexcept override {return this->message.c_str();}
     private:
         std::string message;
     };
@@ -52,6 +53,7 @@ private:
     void handleInputs();
     void goToNextDisplay();
     void goToNextGame();
+    void loadFirstLib(const std::string& name);
 };
 
 #endif

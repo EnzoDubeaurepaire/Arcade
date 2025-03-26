@@ -14,12 +14,28 @@
 Core::Core(const std::string& baseDisplay) {
     this->_loadedGame = "Main Menu";
     this->_gameModules["Main Menu"] = std::pair(std::make_unique<DynamicLibrary>(), std::make_unique<MainMenu>());
-    this->_loadedDisplay = baseDisplay;
+    this->loadFirstLib(baseDisplay);
     this->updateLibraries();
-    if (!this->isLibLoaded(baseDisplay)) {
-        throw CoreException("Could not find or open " + baseDisplay + " library");
+}
+
+void Core::loadFirstLib(const std::string& name) {
+    if (!std::filesystem::exists("./lib") || !std::filesystem::is_directory("./lib")) {
+        throw CoreException("Libraries not found");
     }
-    this->loadDisplay(baseDisplay);
+    try {
+        DynamicLibrary lib(name);
+        void *sym = lib.getSymbol("createInstanceIDisplay");
+        if (!sym) {
+            throw CoreException("Could not find symbol in '" + name + "'");
+        }
+        auto *displayCreator = reinterpret_cast<std::unique_ptr<IDisplayModule>(*)()>(sym);
+        auto display = displayCreator();
+        const std::string str = display->getName();
+        this->_displayModules[str] = std::pair(std::make_unique<DynamicLibrary>(lib), std::move(display));
+        this->loadDisplay(str);
+    } catch (DynamicLibrary::DynamicLibraryException& e) {
+        throw CoreException("Could not load library '" + name + "'");
+    }
 }
 
 IGameModule& Core::getGame(const std::string& name) {
