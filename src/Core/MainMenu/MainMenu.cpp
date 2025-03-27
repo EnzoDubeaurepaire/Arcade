@@ -10,7 +10,10 @@
 #include <iostream>
 
 
-MainMenu::MainMenu() {
+MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::shared_ptr<std::string>& loadedDisplay) {
+    this->_loadedGame = loadedGame;
+    this->_loadedDisplay = loadedDisplay;
+
     _objects["selector"] = std::make_unique<Sprite>("./ressources/MainMenu");
     _objects["selector"]->setPosition({0, 0});
     _objects["selector"]->setSize({50, 50});
@@ -62,3 +65,12 @@ void MainMenu::addCharToPlayer(const char c) {
         return;
     this->_playerName.push_back(c);
 }
+
+void MainMenu::updateDisplay(const std::vector<std::string> &display) {
+    this->_display = display;
+}
+
+void MainMenu::updateGames(const std::vector<std::string> &games) {
+    this->_games = games;
+}
+

@@ -15,6 +15,7 @@
 #include "IGameModule.hpp"
 #include "Loader.hpp"
 #include "KeyCodes.hpp"
+#include <vector>
 
 class Core
 {
@@ -23,7 +24,7 @@ public:
     {
     public:
         explicit CoreException(const std::string &what) : message("Core error : " + what) {};
-        const char* what() const noexcept override {return this->message.c_str();}
+        const char* what() const noexcept override {return this->message.c_str();};
     private:
         std::string message;
     };
@@ -39,10 +40,12 @@ public:
 
 private:
     bool _running = true;
-    std::string _loadedGame;
-    std::string _loadedDisplay;
+    std::shared_ptr<std::string> _loadedGame;
+    std::shared_ptr<std::string> _loadedDisplay;
     std::map<std::string, std::pair<std::unique_ptr<DynamicLibrary>, std::unique_ptr<IGameModule>>> _gameModules;
     std::map<std::string, std::pair<std::unique_ptr<DynamicLibrary>, std::unique_ptr<IDisplayModule>>> _displayModules;
+    std::pair<int, int> _mousePos;
+    int _input{};
 
     void loadGame(const std::string& name);
     void unloadGame(const std::string& name);
@@ -54,6 +57,9 @@ private:
     void goToNextDisplay();
     void goToNextGame();
     void loadFirstLib(const std::string& name);
+    void updateLoadedGame();
+    std::vector<std::string> getDisplayList() const;
+    std::vector<std::string> getGamesList() const;
 };
 
 #endif
