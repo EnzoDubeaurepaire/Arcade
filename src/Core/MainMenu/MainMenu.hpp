@@ -7,6 +7,11 @@
 
 #ifndef MAIN_MENU_H_
 #define MAIN_MENU_H_
+
+#define TITLE_SIZE 20
+#define USERNAME_SIZE 15
+#define USERNAME_MAX_LENGTH 13
+
 #include <list>
 #include <vector>
 
@@ -38,9 +43,11 @@ private:
     std::shared_ptr<std::string> _loadedDisplay;
     std::vector<std::string> _games;
     std::vector<std::string> _display;
+    std::pair<std::size_t, std::size_t> _cursorPos;
 
     void removeCharFromPlayer();
     void addCharToPlayer(char c);
+    void addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, u_int32_t color);
 };
 
 #endif
