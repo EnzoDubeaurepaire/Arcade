@@ -14,6 +14,7 @@
 
 #include <list>
 #include <vector>
+#include <algorithm>
 
 #include "IGameModule.hpp"
 #include "Sprite.hpp"
@@ -44,10 +45,17 @@ private:
     std::vector<std::string> _games;
     std::vector<std::string> _display;
     std::pair<std::size_t, std::size_t> _cursorPos;
+    std::pair<int, int> _selectorPos;
 
     void removeCharFromPlayer();
     void addCharToPlayer(char c);
     void addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, u_int32_t color);
+    void updateDisplayText();
+    void updateGamesText();
+    void moveSelectorLeft();
+    void moveSelectorRight();
+    void moveSelectorUp();
+    void moveSelectorDown();
 };
 
 #endif

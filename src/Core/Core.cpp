@@ -148,6 +148,7 @@ std::vector<std::string> Core::getGamesList() const {
     std::vector<std::string> vec;
 
     for (const auto& pair : this->_gameModules)
+        if (pair.first != "Main Menu")
         vec.push_back(pair.first);
     return vec;
 }
@@ -171,6 +172,7 @@ void Core::run() {
         this->updateLibraries();
         this->handleInputs();
         this->updateLoadedGame();
+        this->getDisplay(*this->_loadedDisplay).initObject(this->getGame(*this->_loadedGame).getObjects());
         this->getDisplay(*this->_loadedDisplay).display(this->getGame(*this->_loadedGame).getObjects());
     }
 }
