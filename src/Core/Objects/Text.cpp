@@ -8,5 +8,11 @@
 #include "Text.hpp"
 
 Text::Text(const std::string& path) {
+    TextProperties textProperties;
+
+    textProperties.color = 0;
+    textProperties.text = "";
+    textProperties.characterSize = 0;
+    this->_properties = textProperties;
     _path = path;
 }

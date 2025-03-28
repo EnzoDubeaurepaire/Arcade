@@ -12,8 +12,9 @@
 #include "MainMenu.hpp"
 
 Core::Core(const std::string& baseDisplay) {
-    this->_loadedGame = "Main Menu";
-    this->_gameModules["Main Menu"] = std::pair(std::make_unique<DynamicLibrary>(), std::make_unique<MainMenu>());
+    this->_loadedGame = std::make_shared<std::string>("Main Menu");
+    this->_loadedDisplay = std::make_shared<std::string>("");
+    this->_gameModules["Main Menu"] = std::pair(std::make_unique<DynamicLibrary>(), std::make_unique<MainMenu>(this->_loadedGame, this->_loadedDisplay));
     this->loadFirstLib(baseDisplay);
     this->updateLibraries();
 }
@@ -66,7 +67,7 @@ void Core::getDisplayFallback() {
 
 void Core::getGameFallback() {
     if (this->_gameModules.empty()) {
-        this->_loadedGame = "Main Menu";
+        *this->_loadedGame = "Main Menu";
     } else
         this->loadGame(this->_gameModules.begin()->first);
 }
@@ -106,22 +107,22 @@ void Core::updateLibraries() {
     for (const auto& lib : this->_displayModules)
         if (!this->isLibLoaded(lib.first))
             this->_displayModules.erase(lib.first);
-    if (!this->isLibLoaded(this->_loadedDisplay))
+    if (!this->isLibLoaded(*this->_loadedDisplay))
         this->getDisplayFallback();
-    if (!this->isLibLoaded(this->_loadedGame))
+    if (!this->isLibLoaded(*this->_loadedGame))
         this->getGameFallback();
 }
 
 void Core::handleInputs() {
-    const int input = this->getDisplay(this->_loadedDisplay).getInput();
-    const std::pair<int, int> mousePos = this->getDisplay(this->_loadedDisplay).getMousePos();
+    this->_input = this->getDisplay(*this->_loadedDisplay).getInput();
+    this->_mousePos = this->getDisplay(*this->_loadedDisplay).getMousePos();
 
-    switch (input) {
+    switch (this->_input) {
         case CTRL('q'):
             this->_running = false;
             break;
         case KEY_ESC:
-            this->unloadGame(this->_loadedDisplay);
+            this->unloadGame(*this->_loadedDisplay);
             this->loadGame("Main Menu");
             break;
         case CTRL('d'):
@@ -131,21 +132,54 @@ void Core::handleInputs() {
             this->goToNextGame();
             break;
         default:
-            this->getGame(this->_loadedGame).update(mousePos, input);
+            break;
     }
 }
+
+std::vector<std::string> Core::getDisplayList() const {
+    std::vector<std::string> vec;
+
+    for (const auto& pair : this->_displayModules)
+        vec.push_back(pair.first);
+    return vec;
+}
+
+std::vector<std::string> Core::getGamesList() const {
+    std::vector<std::string> vec;
+
+    for (const auto& pair : this->_gameModules)
+        if (pair.first != "Main Menu")
+        vec.push_back(pair.first);
+    return vec;
+}
+
+
+void Core::updateLoadedGame() {
+    if (*this->_loadedGame == "Main Menu") {
+        try {
+            dynamic_cast<MainMenu&>(this->getGame("Main Menu")).updateDisplay(this->getDisplayList());
+            dynamic_cast<MainMenu&>(this->getGame("Main Menu")).updateGames(this->getGamesList());
+        } catch (const std::bad_cast& e) {
+            throw CoreException(e.what());
+        }
+    }
+    this->getGame(*this->_loadedGame).update(this->_mousePos, this->_input);
+}
+
 
 void Core::run() {
     while (this->_running) {
         this->updateLibraries();
         this->handleInputs();
-        this->getDisplay(this->_loadedDisplay).display(this->getGame(this->_loadedGame).getObjects());
+        this->updateLoadedGame();
+        this->getDisplay(*this->_loadedDisplay).initObject(this->getGame(*this->_loadedGame).getObjects());
+        this->getDisplay(*this->_loadedDisplay).display(this->getGame(*this->_loadedGame).getObjects());
     }
 }
 
 void Core::loadGame(const std::string &name) {
     if (this->_gameModules.contains(name)) {
-        this->_loadedGame = name;
+        *this->_loadedGame = name;
     }
 }
 
@@ -155,8 +189,8 @@ void Core::unloadGame(const std::string &name) {
 
 void Core::loadDisplay(const std::string &name) {
     if (this->_displayModules.contains(name)) {
-        this->_loadedDisplay = name;
-        this->getDisplay(name).initObject(this->getGame(this->_loadedGame).getObjects());
+        *this->_loadedDisplay = name;
+        this->getDisplay(name).initObject(this->getGame(*this->_loadedGame).getObjects());
         this->getDisplay(name).openWindow();
     }
 }
@@ -172,7 +206,7 @@ void Core::goToNextGame() {
         return;
     auto it = this->_gameModules.begin();
     for (; it != this->_gameModules.end(); ++it) {
-        if (it->first == this->_loadedGame)
+        if (it->first == *this->_loadedGame)
             break;
     }
     ++it;
@@ -183,7 +217,7 @@ void Core::goToNextGame() {
         if (it == this->_gameModules.end())
             it = this->_gameModules.begin();
     }
-    this->unloadGame(this->_loadedGame);
+    this->unloadGame(*this->_loadedGame);
     this->loadGame(it->first);
 }
 
@@ -192,12 +226,12 @@ void Core::goToNextDisplay() {
         return;
     auto it = this->_displayModules.begin();
     for (; it != this->_displayModules.end(); ++it) {
-        if (it->first == this->_loadedDisplay)
+        if (it->first == *this->_loadedDisplay)
             return;
     }
     ++it;
     if (it == this->_displayModules.end())
         it = this->_displayModules.begin();
-    this->unloadDisplay(this->_loadedDisplay);
+    this->unloadDisplay(*this->_loadedDisplay);
     this->loadDisplay(it->first);
 }

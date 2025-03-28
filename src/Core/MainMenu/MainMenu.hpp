@@ -7,15 +7,25 @@
 
 #ifndef MAIN_MENU_H_
 #define MAIN_MENU_H_
+
+#define TITLE_SIZE 20
+#define USERNAME_SIZE 15
+#define USERNAME_MAX_LENGTH 13
+
+#include <list>
+#include <vector>
+#include <algorithm>
+
 #include "IGameModule.hpp"
 #include "Sprite.hpp"
 #include "KeyCodes.hpp"
+#include "Loader.hpp"
 #include "Text.hpp"
 
 
 class MainMenu final : public IGameModule {
 public:
-    MainMenu();
+    MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::shared_ptr<std::string>& loadedDisplay);
     ~MainMenu() override = default;
 
     bool update(std::pair<int, int>pos, int input) override;
@@ -23,12 +33,29 @@ public:
     std::string getName() const override {return "Main Menu";};
     std::size_t getScore() const override {return 0;};
 
+    void updateGames(const std::vector<std::string>& games);
+    void updateDisplay(const std::vector<std::string>& display);
+    
+
 private:
     std::map<std::string, std::unique_ptr<IObject>> _objects;
     std::string _playerName;
+    std::shared_ptr<std::string> _loadedGame;
+    std::shared_ptr<std::string> _loadedDisplay;
+    std::vector<std::string> _games;
+    std::vector<std::string> _display;
+    std::pair<std::size_t, std::size_t> _cursorPos;
+    std::pair<int, int> _selectorPos;
 
     void removeCharFromPlayer();
     void addCharToPlayer(char c);
+    void addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, u_int32_t color);
+    void updateDisplayText();
+    void updateGamesText();
+    void moveSelectorLeft();
+    void moveSelectorRight();
+    void moveSelectorUp();
+    void moveSelectorDown();
 };
 
 #endif

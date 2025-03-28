@@ -52,7 +52,11 @@ void SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>& object
             auto texture(any_cast<sf::Texture>(object.second->getTexture()));
             sprite.setTexture(texture);
             sprite.setPosition(static_cast<float>(object.second->getPosition().first), static_cast<float>(object.second->getPosition().second));
-            const sf::IntRect rect(object.second->getOffset().first, object.second->getOffset().second, object.second->getSize().first, object.second->getSize().second);
+            IObject::Properties spriteProperties = object.second->getProperties();
+            const sf::IntRect rect(std::get<IObject::SpriteProperties>(object.second->getProperties()).offset.first,
+                std::get<IObject::SpriteProperties>(object.second->getProperties()).offset.second,
+                std::get<IObject::SpriteProperties>(object.second->getProperties()).size.first,
+                std::get<IObject::SpriteProperties>(object.second->getProperties()).size.second);
             sprite.setTextureRect(rect);
             this->_window->draw(sprite);
         }
@@ -61,9 +65,9 @@ void SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>& object
             auto font(std::any_cast<sf::Font>(object.second->getTexture()));
             text.setPosition(static_cast<float>(object.second->getPosition().first), static_cast<float>(object.second->getPosition().second));
             text.setFont(font);
-            text.setString(object.second->getText());
+            text.setString(std::get<IObject::TextProperties>(object.second->getProperties()).text);
             text.setFillColor(sf::Color::White);
-            text.setCharacterSize(object.second->getSize().first);
+            text.setCharacterSize(std::get<IObject::TextProperties>(object.second->getProperties()).characterSize);
             this->_window->draw(text);
         }
     }

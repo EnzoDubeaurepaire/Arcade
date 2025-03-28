@@ -12,15 +12,40 @@
 #include <any>
 #include <string>
 #include <utility>
+#include <variant>
 
 // Object types (add more if needed)
 #define SPRITE "SPRITE"
 #define TEXT "TEXT"
 
+#define COLOR(A, R, G, B) ((A << 24) | (R << 16) | (G << 8) | B)
+#define GET_ALPHA(color) ((color >> 24) & 0xFF)
+#define GET_RED(color) ((color >> 16) & 0xFF)
+#define GET_GREEN(color) ((color >> 8) & 0xFF)
+#define GET_BLUE(color) (color & 0xFF)
+
+#define WHITE 0xffffffff
+#define BLACK 0xff000000
+
 // Definition of the IObject interface
 class IObject
 {
 public:
+    struct TextProperties {
+        u_int32_t color;
+        size_t characterSize;
+        std::string text;
+        ~TextProperties() = default;
+    };
+
+    struct SpriteProperties {
+        std::pair<int, int> size;
+        std::pair<int, int> offset;
+        ~SpriteProperties() = default;
+    };
+
+    using Properties = std::variant<TextProperties, SpriteProperties>;
+
     // Default virtual destructor
     virtual ~IObject() = default;
 
@@ -33,32 +58,23 @@ public:
     virtual void setSprite(std::any) = 0;
     virtual std::any& getSprite() = 0;
 
-    // Texture path getter and setter
-    // !! The path represent the folder in which are stored the sprite sheets (graphical.png and text.txt)
-    virtual void setTexturePath(std::string) = 0;
-    virtual std::string getTexturePath() = 0;
-
-    // Gets the type of the object
-    virtual std::string getType() const = 0;
-
-    // Size getter and setter
-    // Size of the Sprite in the sprite sheet
-    virtual std::pair<int, int> getSize() const = 0;
-    virtual void setSize(std::pair<int, int>) = 0;
-
-    // Offset getter and setter
-    // This is the offset in the sprite sheet, aka the point where the sprite starts
-    virtual std::pair<int, int> getOffset() const = 0;
-    virtual void setOffset(std::pair<int, int>) = 0;
-
     // Texture getter and setter
     // !! getter returns a reference so the texture properties can be modified by the display module
     virtual std::any& getTexture() = 0;
     virtual void setTexture(std::any) = 0;
 
-    // Text getter and setter
-    virtual std::string getText() = 0;
-    virtual void setText(std::string) = 0;
+    // Texture path getter and setter
+    // !! The path represent the folder in which are stored the sprite sheets (graphical.png and text.txt)
+    virtual void setTexturePath(std::string) = 0;
+    virtual std::string getTexturePath() = 0;
+
+    // Properties getter and setter
+    virtual void setProperties(Properties properties) = 0;
+    virtual Properties getProperties() = 0;
+
+    // Gets the type of the object
+    virtual std::string getType() const = 0;
+
 };
 
 #endif
