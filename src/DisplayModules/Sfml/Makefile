@@ -5,20 +5,26 @@
 ## Makefile
 ##
 
-NAME	=		arcade_sfml.so
+NAME		=	arcade_sfml.so
 
 CXXFLAGS	+=	-Wall -Werror -Wextra
 CXXFLAGS	+=	-std=c++20 -fPIC
-CXXFLAGS	+=	-I ../ -I ../../Core
+CXXFLAGS	+=	-I.. -I../../Core
+CXXFLAGS	+=	-I/opt/sfml2/include # ArchLinux specific
 
-LDFLAGS	+=	-lsfml-graphics -lsfml-window -lsfml-system -lsfml-network
-LDFLAGS	+=	-shared
+ifeq ($(DEBUG),1)
+CXXFLAGS += -g3
+endif
 
-CXX = g++
+LDFLAGS		+=	-shared
+LDFLAGS		+=	-lsfml-graphics -lsfml-window -lsfml-system -lsfml-network
+LDFLAGS		+=	-L/opt/sfml2/lib # ArchLinux specific
 
-SRC	=	SfmlModule.cpp
+CXX		=	g++
 
-OBJ	=	$(SRC:.cpp=.o)
+SRC		=	SfmlModule.cpp
+
+OBJ		=	$(SRC:.cpp=.o)
 
 all:	$(NAME)
 
@@ -30,6 +36,6 @@ clean:
 	rm -rf $(OBJ)
 
 fclean:	clean
-	rm  -rf ../../../lib/$(NAME)
+	rm -rf ../../../lib/$(NAME)
 
 re:	fclean all
