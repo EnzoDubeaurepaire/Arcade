@@ -35,13 +35,14 @@ public:
         u_int32_t color;
         size_t characterSize;
         std::string text;
-        ~TextProperties() = default;
     };
 
     struct SpriteProperties {
         std::pair<int, int> size;
         std::pair<int, int> offset;
-        ~SpriteProperties() = default;
+        std::pair<int, int> textSize;
+        std::pair<int, int> textOffset;
+        u_int32_t textColor;
     };
 
     using Properties = std::variant<TextProperties, SpriteProperties>;

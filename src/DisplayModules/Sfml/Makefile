@@ -12,6 +12,8 @@ CXXFLAGS	+=	-std=c++20 -fPIC
 CXXFLAGS	+=	-I.. -I../../Core
 CXXFLAGS	+=	-I/opt/sfml2/include # ArchLinux specific
 
+LDFLAGS	+=	-L/opt/sfml2/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network
+LDFLAGS	+=	-shared
 ifeq ($(DEBUG),1)
 CXXFLAGS += -g3
 endif
