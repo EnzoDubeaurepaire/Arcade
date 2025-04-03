@@ -5,39 +5,50 @@
 ## Makefile
 ##
 
-NAME	=	arcade
+export DEBUG ?= 0
+
+NAME		=	arcade
 
 CORE_SRC	=	src/main.cpp \
-				src/Loader/Loader.cpp \
-				src/Core/Core.cpp \
-				src/Core/MainMenu/MainMenu.cpp \
-				src/Core/Objects/Sprite.cpp \
-				src/Core/Objects/Text.cpp
+			src/Loader/Loader.cpp \
+			src/Core/Core.cpp \
+			src/Core/MainMenu/MainMenu.cpp \
+			src/Core/Objects/Sprite.cpp \
+			src/Core/Objects/Text.cpp
 
-OBJ	=	$(CORE_SRC:.cpp=.o)
+OBJ		=	$(CORE_SRC:.cpp=.o)
 
 GAME_LIBS	=
 
 DISPLAY_LIBS	=	src/DisplayModules/Sfml
 
-CXXFLAGS	+=	-Wall -Wextra -Werror -g
+CXXFLAGS	+=	-Wall -Wextra -Werror
 CXXFLAGS	+=	-fno-gnu-unique -std=c++20 -ldl
-CXXFLAGS	+=	-I ./src/Loader -I ./src/Games -I ./src/DisplayModules -I ./src/Core -I ./src/Core/MainMenu -I ./src/Core/Objects
+CXXFLAGS	+=	-I./src/Loader -I./src/Games -I./src/DisplayModules -I./src/Core -I./src/Core/MainMenu -I./src/Core/Objects
+CXXFLAGS	+=	-I/opt/sfml2/include # ArchLinux specific
 
-CC	=	g++
+ifeq ($(DEBUG),1)
+CXXFLAGS += -g3
+endif
 
-all: $(NAME)
+CC		=	g++
+
+all:	$(NAME)
 
 $(NAME):	games graphicals core
 
 games:
-	$(foreach lib, $(GAME_LIBS), make -C $(lib);)
+	$(foreach lib, $(GAME_LIBS), make -C $(lib) $(DEBUG_FLAG);)
 
 graphicals:
-	$(foreach lib, $(DISPLAY_LIBS), make -C $(lib);)
+	$(foreach lib, $(DISPLAY_LIBS), make -C $(lib) $(DEBUG_FLAG);)
 
 core:	$(OBJ)
-	$(CC) -o $(NAME) $(OBJ)
+	$(CC) -o $(NAME) $(OBJ) $(CXXFLAGS)
+
+debug:
+	$(MAKE) fclean
+	$(MAKE) DEBUG=1
 
 clean:	clean_libs clean_core
 
