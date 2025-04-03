@@ -87,14 +87,15 @@ void Core::updateLibraries() {
                     std::string str = game->getName();
                     if (!this->_gameModules.contains(str))
                         this->_gameModules[str] = std::pair(std::move(lib), std::move(game));
-                }
-                sym = lib->getSymbol("createInstanceIDisplay");
-                if (sym) {
-                    auto *displayCreator = reinterpret_cast<std::unique_ptr<IDisplayModule>(*)()>(sym);
-                    auto display = displayCreator();
-                    std::string str = display->getName();
-                    if (!this->_displayModules.contains(str))
-                        this->_displayModules[str] = std::pair(std::move(lib), std::move(display));
+                } else {
+                    sym = lib->getSymbol("createInstanceIDisplay");
+                    if (sym) {
+                        auto *displayCreator = reinterpret_cast<std::unique_ptr<IDisplayModule>(*)()>(sym);
+                        auto display = displayCreator();
+                        std::string str = display->getName();
+                        if (!this->_displayModules.contains(str))
+                            this->_displayModules[str] = std::pair(std::move(lib), std::move(display));
+                    }
                 }
             } catch (DynamicLibrary::DynamicLibraryException& e) {
                 std::cout << e.what() << std::endl;
