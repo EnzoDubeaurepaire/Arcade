@@ -24,15 +24,15 @@ void Core::loadFirstLib(const std::string& name) {
         throw CoreException("Libraries not found");
     }
     try {
-        DynamicLibrary lib(name);
-        void *sym = lib.getSymbol("createInstanceIDisplay");
+        std::unique_ptr<DynamicLibrary> lib = std::make_unique<DynamicLibrary>(name);
+        void *sym = lib->getSymbol("createInstanceIDisplay");
         if (!sym) {
             throw CoreException("Could not find symbol in '" + name + "'");
         }
         auto *displayCreator = reinterpret_cast<std::unique_ptr<IDisplayModule>(*)()>(sym);
         auto display = displayCreator();
         const std::string str = display->getName();
-        this->_displayModules[str] = std::pair(std::make_unique<DynamicLibrary>(lib), std::move(display));
+        this->_displayModules[str] = std::pair(std::move(lib), std::move(display));
         this->loadDisplay(str);
     } catch (DynamicLibrary::DynamicLibraryException& e) {
         throw CoreException("Could not load library '" + name + "'");
@@ -79,22 +79,22 @@ void Core::updateLibraries() {
     for (const auto& entry : std::filesystem::directory_iterator("./lib")) {
         if (entry.is_regular_file() && entry.path().extension() == ".so") {
             try {
-                DynamicLibrary lib(entry.path().string());
-                void *sym = lib.getSymbol("createInstanceIGame");
+                std::unique_ptr<DynamicLibrary> lib = std::make_unique<DynamicLibrary>(entry.path().string());
+                void *sym = lib->getSymbol("createInstanceIGame");
                 if (sym) {
                     auto *gameCreator = reinterpret_cast<std::unique_ptr<IGameModule>(*)()>(sym);
                     auto game = gameCreator();
                     std::string str = game->getName();
                     if (!this->_gameModules.contains(str))
-                        this->_gameModules[str] = std::pair(std::make_unique<DynamicLibrary>(lib), std::move(game));
+                        this->_gameModules[str] = std::pair(std::move(lib), std::move(game));
                 }
-                sym = lib.getSymbol("createInstanceIDisplay");
+                sym = lib->getSymbol("createInstanceIDisplay");
                 if (sym) {
                     auto *displayCreator = reinterpret_cast<std::unique_ptr<IDisplayModule>(*)()>(sym);
                     auto display = displayCreator();
                     std::string str = display->getName();
                     if (!this->_displayModules.contains(str))
-                        this->_displayModules[str] = std::pair(std::make_unique<DynamicLibrary>(lib), std::move(display));
+                        this->_displayModules[str] = std::pair(std::move(lib), std::move(display));
                 }
             } catch (DynamicLibrary::DynamicLibraryException& e) {
                 std::cout << e.what() << std::endl;

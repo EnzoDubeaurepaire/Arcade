@@ -7,11 +7,11 @@
 
 NAME	=		arcade_sfml.so
 
-CXXFLAGS	+=	-Wall -Werror -Wextra
+CXXFLAGS	+=	-Wall -Werror -Wextra -g
 CXXFLAGS	+=	-std=c++20 -fPIC
 CXXFLAGS	+=	-I ../ -I ../../Core
 
-LDFLAGS	+=	-lsfml-graphics -lsfml-window -lsfml-system -lsfml-network
+LDFLAGS	+=	-L/opt/sfml2/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network
 LDFLAGS	+=	-shared
 
 CXX = g++
