@@ -30,6 +30,8 @@ int SfmlModule::getInput() {
                 return KEY_BACKSPACE;
             if (event.key.code == sf::Keyboard::Enter)
                 return '\n';
+            if (event.key.code == sf::Keyboard::Space)
+                return ' ';
         }
     }
     return 0;
@@ -66,7 +68,8 @@ void SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>& object
             text->setPosition(static_cast<float>(object.second->getPosition().first), static_cast<float>(object.second->getPosition().second));
             text->setFont(*font);
             text->setString(std::get<IObject::TextProperties>(object.second->getProperties()).text);
-            text->setFillColor(sf::Color::White);
+            u_int32_t color = std::get<IObject::TextProperties>(object.second->getProperties()).color;
+            text->setFillColor(sf::Color(GET_RED(color), GET_GREEN(color), GET_BLUE(color), GET_ALPHA(color)));
             text->setCharacterSize(std::get<IObject::TextProperties>(object.second->getProperties()).characterSize);
             this->_window->draw(*text);
         }
