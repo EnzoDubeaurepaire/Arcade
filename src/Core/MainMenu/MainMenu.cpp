@@ -8,12 +8,12 @@
 #include "MainMenu.hpp"
 
 #include <iostream>
-#include <SFML/Graphics/Color.hpp>
 
 
 MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::shared_ptr<std::string>& loadedDisplay) {
     this->_loadedGame = loadedGame;
     this->_loadedDisplay = loadedDisplay;
+    this->_selectedGame = 0;
 
     this->_objects["selector"] = std::make_unique<Sprite>("./ressources/MainMenu");
     this->_objects["selector"]->setPosition({150, 300});
@@ -111,7 +111,7 @@ void MainMenu::updateGames(const std::vector<std::string> &games) {
     this->_games = games;
 }
 
-void MainMenu::addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, const u_int32_t color) {
+void MainMenu::addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, const uint32_t color) {
     this->_objects[name] = std::make_unique<Text>("./ressources/MainMenu");
     this->_objects[name]->setPosition({pos.first, pos.second});
     auto properties = std::get<IObject::TextProperties>(this->_objects[name]->getProperties());
