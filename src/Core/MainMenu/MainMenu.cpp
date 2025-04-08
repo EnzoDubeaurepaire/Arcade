@@ -22,7 +22,7 @@ MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::sh
     spriteProperties.size = {50, 50};
     this->_objects["selector"]->setProperties(spriteProperties);
 
-    this->addTextObject("playerName", {300, 300}, USERNAME_SIZE, "", WHITE);
+    this->addTextObject("playerName", {200, 500}, USERNAME_SIZE, "", WHITE);
     this->addTextObject("title", {150, 50}, TITLE_SIZE, "Arcacade", WHITE);
 }
 
@@ -72,13 +72,21 @@ bool MainMenu::update(std::pair<int, int> pos, int input) {
         case KEY_BACKSPACE:
             this->removeCharFromPlayer();
             break;
+        case ' ':
+            this->select();
+            break;
+        case '\n':
+            this->launch();
+            break;
         default:
             if (input >= 'a' && input <= 'z')
                 this->addCharToPlayer(static_cast<char>(input));
             break;
     }
+    if (this->_games.empty())
+        this->moveSelectorRight();
     auto textProperties = std::get<IObject::TextProperties>(this->_objects["playerName"]->getProperties());
-    textProperties.text = this->_playerName;
+    textProperties.text = "Enter player name: " + this->_playerName;
     this->_objects["playerName"]->setProperties(textProperties);
     return true;
 }
@@ -148,6 +156,10 @@ void MainMenu::moveSelectorLeft() {
         auto [x, y] = _objects["selector"]->getPosition();
         _objects["selector"]->setPosition({x - 200, y});
         this->_selectorPos.first = 0;
+        if (this->_selectorPos.second > static_cast<int>(this->_games.size()) - 1) {
+            _objects["selector"]->setPosition({x - 200, y - (200 * (this->_selectorPos.second - this->_games.size()))});
+            this->_selectorPos.second = this->_games.size() - 1;
+        }
     }
 }
 
@@ -156,6 +168,42 @@ void MainMenu::moveSelectorRight() {
         auto [x, y] = _objects["selector"]->getPosition();
         _objects["selector"]->setPosition({x + 200, y});
         this->_selectorPos.first = 1;
+        if (this->_selectorPos.second > static_cast<int>(this->_display.size()) - 1) {
+            _objects["selector"]->setPosition({x + 200, y - (200 * (this->_selectorPos.second - this->_display.size()))});
+            this->_selectorPos.second = this->_display.size() - 1;
+        }
     }
 }
 
+void MainMenu::select() {
+    if (this->_selectorPos.first == 0) {
+        this->_selectedGame = this->_selectorPos.second;
+        for (const auto& gameName : this->_games) {
+            auto properties = std::get<IObject::TextProperties>(this->_objects[gameName]->getProperties());
+            properties.color = WHITE;
+            this->_objects[gameName]->setProperties(properties);
+        }
+        auto properties = std::get<IObject::TextProperties>(this->_objects[this->_games[this->_selectorPos.second]]->getProperties());
+        properties.color = COLOR(255, 172, 172, 172);
+        this->_objects[this->_games[this->_selectorPos.second]]->setProperties(properties);
+    }
+    if (this->_selectorPos.first == 1) {
+        *this->_loadedDisplay = this->_display[this->_selectorPos.second];
+        for (const auto& displayName : this->_display) {
+            auto properties = std::get<IObject::TextProperties>(this->_objects[displayName]->getProperties());
+            properties.color = WHITE;
+            this->_objects[displayName]->setProperties(properties);
+        }
+        auto properties = std::get<IObject::TextProperties>(this->_objects[this->_display[this->_selectorPos.second]]->getProperties());
+        properties.color = COLOR(255, 172, 172, 172);
+        this->_objects[this->_display[this->_selectorPos.second]]->setProperties(properties);
+    }
+}
+
+void MainMenu::launch() const {
+    if (this->_playerName.empty())
+        return;
+    if (this->_games.empty())
+        return;
+    *this->_loadedGame = this->_games[this->_selectedGame];
+}
