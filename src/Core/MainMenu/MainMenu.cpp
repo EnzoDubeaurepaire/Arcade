@@ -14,6 +14,7 @@
 MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::shared_ptr<std::string>& loadedDisplay) {
     this->_loadedGame = loadedGame;
     this->_loadedDisplay = loadedDisplay;
+    this->_selectorPos = {0, 0};  // Initialiser la position du curseur
 
     this->_objects["selector"] = std::make_unique<Sprite>("./ressources/MainMenu");
     this->_objects["selector"]->setPosition({150, 300});
@@ -116,12 +117,12 @@ void MainMenu::addTextObject(const std::string& name, std::pair<int, int> pos, i
 void MainMenu::moveSelectorDown() {
     auto [x, y] = _objects["selector"]->getPosition();
     if (this->_selectorPos.first == 0) {
-        if (static_cast<int>(this->_games.size()) < this->_selectorPos.second) {
+        if (this->_selectorPos.second < this->_games.size() - 1) {
             _objects["selector"]->setPosition({x, y + 30});
             this->_selectorPos.second++;
         }
     } else {
-        if (static_cast<int>(this->_display.size()) < this->_selectorPos.second) {
+        if (this->_selectorPos.second < this->_display.size() - 1) {
             _objects["selector"]->setPosition({x, y + 30});
             this->_selectorPos.second++;
         }
@@ -130,16 +131,9 @@ void MainMenu::moveSelectorDown() {
 
 void MainMenu::moveSelectorUp() {
     auto [x, y] = _objects["selector"]->getPosition();
-    if (this->_selectorPos.first == 0) {
-        if (this->_selectorPos.second > 0) {
-            _objects["selector"]->setPosition({x, y - 30});
-            this->_selectorPos.second--;
-        }
-    } else {
-        if (this->_selectorPos.second > 0) {
-            _objects["selector"]->setPosition({x, y - 30});
-            this->_selectorPos.second--;
-        }
+    if (this->_selectorPos.second > 0) {
+        _objects["selector"]->setPosition({x, y - 30});
+        this->_selectorPos.second--;
     }
 }
 

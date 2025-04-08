@@ -45,7 +45,7 @@ private:
     std::vector<std::string> _games;
     std::vector<std::string> _display;
     std::pair<std::size_t, std::size_t> _cursorPos;
-    std::pair<int, int> _selectorPos;
+    std::pair<size_t, size_t> _selectorPos;
 
     void removeCharFromPlayer();
     void addCharToPlayer(char c);
