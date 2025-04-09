@@ -59,4 +59,10 @@ private:
     void createApple(int appleNb);
 };
 
+extern "C" {
+    std::unique_ptr<IGameModule> createInstanceIGame() {
+        return std::make_unique<Snake>();
+    }
+}
+
 #endif
