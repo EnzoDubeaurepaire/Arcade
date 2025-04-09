@@ -164,7 +164,8 @@ void Core::updateLoadedGame() {
             throw CoreException(e.what());
         }
     }
-    this->getGame(*this->_loadedGame).update(this->_mousePos, this->_input);
+    if (this->getGame(*this->_loadedGame).update(this->_mousePos, this->_input))
+        this->loadGame("Main Menu");
 }
 
 

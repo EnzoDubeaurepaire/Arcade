@@ -78,10 +78,68 @@ void Snake::updateSnake() {
     }
 }
 
+bool Snake::collideWall() {
+    std::vector<std::pair<int, int>> walls;
+
+    for (auto& object : this->_objects)
+        if (object.first.starts_with("wall") || (object.first.starts_with("snake") && object.first != "snake1"))
+            walls.emplace_back(object.second->getPosition());
+    std::pair<int, int> snakeHeadPos = this->_objects["snake1"]->getPosition();
+    auto it = std::find(walls.begin(), walls.end(), snakeHeadPos);
+    if (it == walls.end())
+        return false;
+    return true;
+}
+
+void Snake::checkApples() {
+    for (auto& object : this->_objects)
+        if (object.first.starts_with("apple"))
+            if (object.second->getPosition() == this->_objects["snake1"]->getPosition()) {
+                this->createApple(object.first.back() - '0');
+                this->addSnakePart();
+            }
+}
+
+void Snake::addSnakePart() {
+    std::pair<int, int> newPos;
+    std::pair<int, int> tailPos = this->_objects["snake" + std::to_string(this->_snakeSize)]->getPosition();
+
+    std::vector<std::pair<int, int>> possiblePos;
+    std::vector<bool> valid = {true, true, true, true};
+    possiblePos.emplace_back(tailPos.first - ASSET_SIZE, tailPos.first);
+    possiblePos.emplace_back(tailPos.first + ASSET_SIZE, tailPos.first);
+    possiblePos.emplace_back(tailPos.first, tailPos.first - ASSET_SIZE);
+    possiblePos.emplace_back(tailPos.first, tailPos.first + ASSET_SIZE);
+    for (auto& object : this->_objects) {
+        for (int i = 0; i < 4; i++)
+            if (object.second->getPosition() == possiblePos[i])
+                valid[i] = false;
+    }
+    int n = 0;
+    for (; !valid[n]; n++);
+    newPos = possiblePos[n];
+    std::string newName = "snake" + std::to_string(this->_snakeSize + 1);
+    this->_objects[newName] = std::make_unique<Sprite>("./ressources/Snake");
+    this->_objects[newName]->setPosition(newPos);
+    auto properties = std::get<IObject::SpriteProperties>(this->_objects[newName]->getProperties());
+    properties.offset = HEAD_RIGHT;
+    properties.size = {ASSET_SIZE, ASSET_SIZE};
+    properties.textColor = COLOR(255, 0, 255, 0);
+    properties.textSize = {ASSET_SIZE / 4, ASSET_SIZE / 4};
+    properties.textOffset = HEAD_RIGHT;
+    properties.textOffset.first /= 4;
+    properties.textOffset.second /= 4;
+    this->_objects[newName]->setProperties(properties);
+    this->_snakeSize++;
+}
+
 bool Snake::update(std::pair<int, int> mousePos, int input) {
     (void)mousePos;
     this->moveSnake(input);
     this->updateSnake();
+    if (this->collideWall())
+        return true;
+    this->checkApples();
     return false;
 }
 

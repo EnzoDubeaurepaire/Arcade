@@ -77,6 +77,11 @@ private:
 
     void moveSnake(int input);
     void updateSnake();
+
+    bool collideWall();
+    void checkApples();
+
+    void addSnakePart();
 };
 
 #endif
