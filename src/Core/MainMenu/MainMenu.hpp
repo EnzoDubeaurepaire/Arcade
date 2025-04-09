@@ -21,6 +21,7 @@
 #include "KeyCodes.hpp"
 #include "Loader.hpp"
 #include "Text.hpp"
+#include "IObject.hpp"
 
 
 class MainMenu final : public IGameModule {
@@ -43,6 +44,7 @@ private:
     std::shared_ptr<std::string> _loadedGame;
     std::shared_ptr<std::string> _loadedDisplay;
     std::vector<std::string> _games;
+    int _selectedGame;
     std::vector<std::string> _display;
     std::pair<std::size_t, std::size_t> _cursorPos;
     std::pair<int, int> _selectorPos;
@@ -56,6 +58,8 @@ private:
     void moveSelectorRight();
     void moveSelectorUp();
     void moveSelectorDown();
+    void select();
+    void launch() const;
 };
 
 #endif
