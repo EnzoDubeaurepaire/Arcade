@@ -117,12 +117,12 @@ void MainMenu::addTextObject(const std::string& name, std::pair<int, int> pos, i
 void MainMenu::moveSelectorDown() {
     auto [x, y] = _objects["selector"]->getPosition();
     if (this->_selectorPos.first == 0) {
-        if (this->_selectorPos.second < this->_games.size() - 1) {
+        if (this->_selectorPos.second < (int)this->_games.size() - 1) {
             _objects["selector"]->setPosition({x, y + 30});
             this->_selectorPos.second++;
         }
     } else {
-        if (this->_selectorPos.second < this->_display.size() - 1) {
+        if (this->_selectorPos.second < (int)this->_display.size() - 1) {
             _objects["selector"]->setPosition({x, y + 30});
             this->_selectorPos.second++;
         }
