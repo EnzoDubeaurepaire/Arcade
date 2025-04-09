@@ -17,17 +17,17 @@ int SfmlModule::getInput() {
 
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::Left)
-                return KEY_LEFT;
+                return K_LEFT;
             if (event.key.code == sf::Keyboard::Right)
-                return KEY_RIGHT;
+                return K_RIGHT;
             if (event.key.code == sf::Keyboard::Up)
-                return KEY_UP;
+                return K_UP;
             if (event.key.code == sf::Keyboard::Down)
-                return KEY_DOWN;
+                return K_DOWN;
             if (event.key.code >= sf::Keyboard::A && event.key.code <= sf::Keyboard::Z)
                 return event.key.code + 'a';
             if (event.key.code == sf::Keyboard::Backspace)
-                return KEY_BACKSPACE;
+                return K_BACKSPACE;
             if (event.key.code == sf::Keyboard::Enter)
                 return '\n';
             if (event.key.code == sf::Keyboard::Space)

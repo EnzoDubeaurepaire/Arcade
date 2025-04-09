@@ -20,7 +20,8 @@ OBJ		=	$(CORE_SRC:.cpp=.o)
 
 GAME_LIBS	=	
 
-DISPLAY_LIBS	=	src/DisplayModules/Sfml
+DISPLAY_LIBS	=	src/DisplayModules/Sfml \
+			        src/DisplayModules/Ncurses \
 
 CXXFLAGS	+=	-Wall -Wextra -Werror
 CXXFLAGS	+=	-fno-gnu-unique -std=c++20 -ldl
