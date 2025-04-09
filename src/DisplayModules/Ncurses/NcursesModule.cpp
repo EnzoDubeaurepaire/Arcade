@@ -89,8 +89,8 @@ std::pair<int, int> NcursesModule::scaleCoords(int x, int y) {
     double percentX = static_cast<double>(x) / _gameWidth;
     double percentY = static_cast<double>(y) / _gameHeight;
 
-    int termX = static_cast<int>(percentX * _termWidth) + 2;
-    int termY = static_cast<int>(percentY * _termHeight) + 2;
+    int termX = static_cast<int>(percentX * _termWidth);
+    int termY = static_cast<int>(percentY * _termHeight);
 
     return {termX, termY};
 }
