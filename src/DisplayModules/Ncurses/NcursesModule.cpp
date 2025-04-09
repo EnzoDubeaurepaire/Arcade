@@ -121,9 +121,6 @@ void NcursesModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& 
         if (object->getType() == SPRITE) {
             char spriteChar = '#';
             std::string filePath = object->getTexturePath() + "/text.txt";
-            if (filePath.empty() || filePath == "none") {
-                filePath = "assets/sprites/default";
-            }
             std::ifstream file(filePath);
             if (file.is_open()) {
                 std::string line;
