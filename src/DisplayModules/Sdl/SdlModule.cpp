@@ -28,7 +28,6 @@ void SdlResource::cleanup() {
     }
 }
 
-
 SdlModule::SdlModule() = default;
 
 SdlModule::~SdlModule() {
@@ -65,26 +64,24 @@ int SdlModule::getInput() {
 }
 
 void SdlModule::openWindow() {
-    if (_isInitialized) return;
+    if (_isInitialized)
+        return;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
         return;
     }
-
     if (TTF_Init() < 0) {
         std::cerr << "SDL_ttf could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
         SDL_Quit();
         return;
     }
-
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
         std::cerr << "SDL_image could not initialize! IMG_Error: " << IMG_GetError() << std::endl;
         TTF_Quit();
         SDL_Quit();
         return;
     }
-
     _window = SDL_CreateWindow("SDL2 Window",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
@@ -97,7 +94,6 @@ void SdlModule::openWindow() {
         SDL_Quit();
         return;
     }
-
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
     if (!_renderer) {
         std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
@@ -107,7 +103,6 @@ void SdlModule::openWindow() {
         SDL_Quit();
         return;
     }
-
     _isInitialized = true;
 }
 
@@ -122,11 +117,9 @@ void SdlModule::closeWindow() {
         SDL_DestroyWindow(_window);
         _window = nullptr;
     }
-
     IMG_Quit();
     TTF_Quit();
     SDL_Quit();
-
     _isInitialized = false;
 }
 
@@ -135,7 +128,6 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
 
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
     SDL_RenderClear(_renderer);
-
     for (auto& object : objects) {
         try {
             std::string key;
@@ -144,12 +136,9 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
             } catch (const std::bad_any_cast& e) {
                 continue;
             }
-
             auto it = _resources.find(key);
             if (it == _resources.end() || !it->second) continue;
-
             auto& resource = it->second;
-
             if (object.second->getType() == SPRITE && resource->texture) {
                 SDL_Rect srcRect;
                 IObject::SpriteProperties props = std::get<IObject::SpriteProperties>(object.second->getProperties());
@@ -157,7 +146,6 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
                 srcRect.y = props.offset.second;
                 srcRect.w = props.size.first;
                 srcRect.h = props.size.second;
-
                 SDL_Rect dstRect;
                 dstRect.x = object.second->getPosition().first;
                 dstRect.y = object.second->getPosition().second;
@@ -166,10 +154,14 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
 
                 SDL_RenderCopy(_renderer, resource->texture, &srcRect, &dstRect);
             }
-
             if (object.second->getType() == TEXT && resource->font) {
                 IObject::TextProperties props = std::get<IObject::TextProperties>(object.second->getProperties());
-
+                SDL_Color textColor = {
+                    static_cast<Uint8>(GET_RED(props.color)),
+                    static_cast<Uint8>(GET_GREEN(props.color)),
+                    static_cast<Uint8>(GET_BLUE(props.color)),
+                    static_cast<Uint8>(GET_ALPHA(props.color))
+                };
                 if (resource->text != props.text || (long unsigned int)resource->fontSize != props.characterSize) {
                     resource->text = props.text;
                     resource->fontSize = props.characterSize;
@@ -178,17 +170,14 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
                         SDL_DestroyTexture(resource->texture);
                         resource->texture = nullptr;
                     }
-
                     if (!props.text.empty()) {
-                        SDL_Color color = {255, 255, 255, 255};
-                        SDL_Surface* textSurface = TTF_RenderText_Solid(resource->font, props.text.c_str(), color);
+                        SDL_Surface* textSurface = TTF_RenderText_Solid(resource->font, props.text.c_str(), textColor);
                         if (textSurface) {
                             resource->texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
                             SDL_FreeSurface(textSurface);
                         }
                     }
                 }
-
                 if (resource->texture) {
                     int width, height;
                     SDL_QueryTexture(resource->texture, NULL, NULL, &width, &height);
@@ -206,7 +195,6 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
             std::cerr << "Error during display: " << e.what() << std::endl;
         }
     }
-
     SDL_RenderPresent(_renderer);
 }
 
@@ -214,19 +202,16 @@ void SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obje
     if (!_isInitialized) {
         openWindow();
     }
-
     if (!_isInitialized || !_renderer) {
         std::cerr << "SDL not initialized in initObject!" << std::endl;
         return;
     }
-
     for (auto& object : objects) {
         auto resource = std::make_unique<SdlResource>();
         std::string key = object.first;
         if (object.second->getType() == SPRITE) {
             std::string path = object.second->getTexturePath() + "/graphical.png";
             SDL_Surface* surface = IMG_Load(path.c_str());
-
             if (surface) {
                 resource->texture = SDL_CreateTextureFromSurface(_renderer, surface);
                 SDL_FreeSurface(surface);
@@ -238,27 +223,29 @@ void SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obje
                 std::cerr << "Failed to load image: " << path << " - " << IMG_GetError() << std::endl;
             }
         }
-
         if (object.second->getType() == TEXT) {
             IObject::TextProperties props = std::get<IObject::TextProperties>(object.second->getProperties());
             std::string fontPath = object.second->getTexturePath() + "/font.ttf";
-
             resource->font = TTF_OpenFont(fontPath.c_str(), props.characterSize);
-
             if (resource->font) {
                 resource->fontSize = props.characterSize;
                 resource->text = props.text;
 
                 if (!props.text.empty()) {
-                    SDL_Color color = {255, 255, 255, 255};
-                    SDL_Surface* textSurface = TTF_RenderText_Solid(resource->font, props.text.c_str(), color);
+                    SDL_Color textColor = {
+                        static_cast<Uint8>(GET_RED(props.color)),
+                        static_cast<Uint8>(GET_GREEN(props.color)),
+                        static_cast<Uint8>(GET_BLUE(props.color)),
+                        static_cast<Uint8>(GET_ALPHA(props.color))
+                    };
+                    SDL_Surface* textSurface = TTF_RenderText_Solid(resource->font, props.text.c_str(), textColor);
                     if (textSurface) {
                         resource->texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
                         SDL_FreeSurface(textSurface);
                     }
                 }
             } else {
-                std::cerr << "Failed to load font: " << fontPath << " - " << TTF_GetError() << std::endl;
+                std::cerr << "Failed to load font: " << fontPath << std::endl;
             }
         }
         _resources[key] = std::move(resource);
