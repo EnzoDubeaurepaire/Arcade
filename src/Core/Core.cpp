@@ -122,7 +122,7 @@ void Core::handleInputs() {
         case CTRL('q'):
             this->_running = false;
             break;
-        case KEY_ESC:
+        case K_ESC:
             this->unloadGame(*this->_loadedDisplay);
             this->loadGame("Main Menu");
             break;

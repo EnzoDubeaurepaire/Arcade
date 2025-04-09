@@ -9,84 +9,84 @@
 #define KEYCODES_H_
 
 // Basic ASCII values
-#define KEY_BACKSPACE   8   /* Backspace key */
-#define KEY_TAB        9   /* Tab key */
-#define KEY_ENTER      10  /* Enter key */
-#define KEY_ESC        27  /* Escape key */
-#define KEY_SPACE      32  /* Space key */
+#define K_BACKSPACE   8   /* Backspace key */
+#define K_TAB        9   /* Tab key */
+#define K_ENTER      10  /* Enter key */
+#define K_ESC        27  /* Escape key */
+#define K_SPACE      32  /* Space key */
 
 // Arrow keys
-#define KEY_DOWN       258 /* Down arrow key */
-#define KEY_UP         259 /* Up arrow key */
-#define KEY_LEFT       260 /* Left arrow key */
-#define KEY_RIGHT      261 /* Right arrow key */
+#define K_DOWN       258 /* Down arrow key */
+#define K_UP         259 /* Up arrow key */
+#define K_LEFT       260 /* Left arrow key */
+#define K_RIGHT      261 /* Right arrow key */
 
 // Navigation keys
-#define KEY_HOME       262 /* Home key */
-#define KEY_END        263 /* End key */
-#define KEY_PPAGE      264 /* Page Up key */
-#define KEY_NPAGE      265 /* Page Down key */
-#define KEY_IC         266 /* Insert key */
-#define KEY_DC         267 /* Delete key */
+#define K_HOME       262 /* Home K */
+#define K_END        263 /* End K */
+#define K_PPAGE      264 /* Page Up K */
+#define K_NPAGE      265 /* Page Down K */
+#define K_IC         266 /* Insert K */
+#define K_DC         267 /* Delete K */
 
-// Function keys
-#define KEY_F0         300 /* Function key F0 */
-#define KEY_F1         301 /* Function key F1 */
-#define KEY_F2         302 /* Function key F2 */
-#define KEY_F3         303 /* Function key F3 */
-#define KEY_F4         304 /* Function key F4 */
-#define KEY_F5         305 /* Function key F5 */
-#define KEY_F6         306 /* Function key F6 */
-#define KEY_F7         307 /* Function key F7 */
-#define KEY_F8         308 /* Function key F8 */
-#define KEY_F9         309 /* Function key F9 */
-#define KEY_F10        310 /* Function key F10 */
-#define KEY_F11        311 /* Function key F11 */
-#define KEY_F12        312 /* Function key F12 */
+// Function Ks
+#define K_F0         300 /* Function K F0 */
+#define K_F1         301 /* Function K F1 */
+#define K_F2         302 /* Function K F2 */
+#define K_F3         303 /* Function K F3 */
+#define K_F4         304 /* Function K F4 */
+#define K_F5         305 /* Function K F5 */
+#define K_F6         306 /* Function K F6 */
+#define K_F7         307 /* Function K F7 */
+#define K_F8         308 /* Function K F8 */
+#define K_F9         309 /* Function K F9 */
+#define K_F10        310 /* Function K F10 */
+#define K_F11        311 /* Function K F11 */
+#define K_F12        312 /* Function K F12 */
 
-// Shift + Function keys
-#define KEY_SHF1       313 /* Shift + F1 */
-#define KEY_SHF2       314 /* Shift + F2 */
-#define KEY_SHF3       315 /* Shift + F3 */
-#define KEY_SHF4       316 /* Shift + F4 */
-#define KEY_SHF5       317 /* Shift + F5 */
-#define KEY_SHF6       318 /* Shift + F6 */
-#define KEY_SHF7       319 /* Shift + F7 */
-#define KEY_SHF8       320 /* Shift + F8 */
-#define KEY_SHF9       321 /* Shift + F9 */
-#define KEY_SHF10      322 /* Shift + F10 */
-#define KEY_SHF11      323 /* Shift + F11 */
-#define KEY_SHF12      324 /* Shift + F12 */
+// Shift + Function Ks
+#define K_SHF1       313 /* Shift + F1 */
+#define K_SHF2       314 /* Shift + F2 */
+#define K_SHF3       315 /* Shift + F3 */
+#define K_SHF4       316 /* Shift + F4 */
+#define K_SHF5       317 /* Shift + F5 */
+#define K_SHF6       318 /* Shift + F6 */
+#define K_SHF7       319 /* Shift + F7 */
+#define K_SHF8       320 /* Shift + F8 */
+#define K_SHF9       321 /* Shift + F9 */
+#define K_SHF10      322 /* Shift + F10 */
+#define K_SHF11      323 /* Shift + F11 */
+#define K_SHF12      324 /* Shift + F12 */
 
-// Ctrl + Function keys
-#define KEY_CTRL1      325 /* Ctrl + F1 */
-#define KEY_CTRL2      326 /* Ctrl + F2 */
-#define KEY_CTRL3      327 /* Ctrl + F3 */
-#define KEY_CTRL4      328 /* Ctrl + F4 */
-#define KEY_CTRL5      329 /* Ctrl + F5 */
-#define KEY_CTRL6      330 /* Ctrl + F6 */
-#define KEY_CTRL7      331 /* Ctrl + F7 */
-#define KEY_CTRL8      332 /* Ctrl + F8 */
-#define KEY_CTRL9      333 /* Ctrl + F9 */
-#define KEY_CTRL10     334 /* Ctrl + F10 */
-#define KEY_CTRL11     335 /* Ctrl + F11 */
-#define KEY_CTRL12     336 /* Ctrl + F12 */
+// Ctrl + Function Ks
+#define K_CTRL1      325 /* Ctrl + F1 */
+#define K_CTRL2      326 /* Ctrl + F2 */
+#define K_CTRL3      327 /* Ctrl + F3 */
+#define K_CTRL4      328 /* Ctrl + F4 */
+#define K_CTRL5      329 /* Ctrl + F5 */
+#define K_CTRL6      330 /* Ctrl + F6 */
+#define K_CTRL7      331 /* Ctrl + F7 */
+#define K_CTRL8      332 /* Ctrl + F8 */
+#define K_CTRL9      333 /* Ctrl + F9 */
+#define K_CTRL10     334 /* Ctrl + F10 */
+#define K_CTRL11     335 /* Ctrl + F11 */
+#define K_CTRL12     336 /* Ctrl + F12 */
 
-// Special keys
-#define KEY_PADENTER   340 /* Numeric keypad Enter key */
-#define KEY_NL         341 /* Newline key */
+// Special Ks
+#define K_PADENTER   340 /* Numeric Kpad Enter K */
+#define K_NL         341 /* Newline K */
 
 // Mouse events
-#define KEY_RCLICK     342 /* Right-click mouse button */
-#define KEY_LCLICK     343 /* Left-click mouse button */
-#define KEY_MCLICK     344 /* Middle-click mouse button */
-#define KEY_MOTION     345 /* Mouse motion */
-#define KEY_MOUSE      346 /* Mouse event */
+#define K_RCLICK     342 /* Right-click mouse button */
+#define K_LCLICK     343 /* Left-click mouse button */
+#define K_MCLICK     344 /* Middle-click mouse button */
+#define K_MOTION     345 /* Mouse motion */
+#define K_MOUSE      346 /* Mouse event */
 
-// Modifier keys
-#define KEY_SHIFT      347 /* Shift key */
-#define KEY_CTRL       348 /* Control key */
-#define KEY_ALT        349 /* Alt key */
+// Modifier Ks
+#define K_SHIFT      347 /* Shift K */
+#define K_CTRL       348 /* Control K */
+#define K_ALT        349 /* Alt K */
 
 // Helper macros
 #define CTRL(key)     ((key) & 0x1F) /* CTRL + key */

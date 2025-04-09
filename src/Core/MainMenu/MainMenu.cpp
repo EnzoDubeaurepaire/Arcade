@@ -58,19 +58,19 @@ bool MainMenu::update(std::pair<int, int> pos, int input) {
     switch (input) {
         case 0:
             break;
-        case KEY_LEFT:
+        case K_LEFT:
             this->moveSelectorLeft();
             break;
-        case KEY_RIGHT:
+        case K_RIGHT:
             this->moveSelectorRight();
             break;
-        case KEY_UP:
+        case K_UP:
             this->moveSelectorUp();
             break;
-        case KEY_DOWN:
+        case K_DOWN:
             this->moveSelectorDown();
             break;
-        case KEY_BACKSPACE:
+        case K_BACKSPACE:
             this->removeCharFromPlayer();
             break;
         default:
