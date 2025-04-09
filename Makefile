@@ -18,7 +18,7 @@ CORE_SRC	=	src/main.cpp \
 
 OBJ		=	$(CORE_SRC:.cpp=.o)
 
-GAME_LIBS	=
+GAME_LIBS	=	
 
 DISPLAY_LIBS	=	src/DisplayModules/Sfml \
 			        src/DisplayModules/Ncurses \
@@ -27,7 +27,6 @@ DISPLAY_LIBS	=	src/DisplayModules/Sfml \
 CXXFLAGS	+=	-Wall -Wextra -Werror
 CXXFLAGS	+=	-fno-gnu-unique -std=c++20 -ldl
 CXXFLAGS	+=	-I./src/Loader -I./src/Games -I./src/DisplayModules -I./src/Core -I./src/Core/MainMenu -I./src/Core/Objects
-CXXFLAGS	+=	-I/opt/sfml2/include # ArchLinux specific
 
 ifeq ($(DEBUG),1)
 CXXFLAGS += -g3
