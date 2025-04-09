@@ -85,7 +85,7 @@ void SdlModule::openWindow() {
     _window = SDL_CreateWindow("SDL2 Window",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        800, 600,
+        1920, 1080,
         SDL_WINDOW_SHOWN);
     if (!_window) {
         std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
