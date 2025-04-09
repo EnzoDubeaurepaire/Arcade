@@ -87,7 +87,7 @@ bool MainMenu::update(std::pair<int, int> pos, int input) {
     auto textProperties = std::get<IObject::TextProperties>(this->_objects["playerName"]->getProperties());
     textProperties.text = "Enter player name: " + this->_playerName;
     this->_objects["playerName"]->setProperties(textProperties);
-    return true;
+    return false;
 }
 
 void MainMenu::removeCharFromPlayer() {
