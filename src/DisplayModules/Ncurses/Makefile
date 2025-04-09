@@ -8,7 +8,6 @@
 NAME	=	../../../lib/arcade_ncurses.so
 
 SRC	=	NcursesModule.cpp \
-		entry.cpp
 
 OBJ	=	$(SRC:.cpp=.o)
 
