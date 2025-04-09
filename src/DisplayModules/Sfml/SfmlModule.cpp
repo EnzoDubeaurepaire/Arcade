@@ -38,7 +38,7 @@ int SfmlModule::getInput() {
 }
 
 void SfmlModule::openWindow() {
-    this->_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "SFML Window");
+    this->_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1920, 1080), "SFML Window");
 }
 
 void SfmlModule::closeWindow() {

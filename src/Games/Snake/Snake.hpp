@@ -5,11 +5,15 @@
 ** Snake
 */
 
-#include <random>
-#include "IGameModule.hpp"
-
 #ifndef SNAKE_H
 #define SNAKE_H
+
+#include <random>
+#include "IGameModule.hpp"
+#include <algorithm>
+#include <iostream>
+#include <chrono>
+#include <thread>
 
 #define ASSET_SIZE 64
 #define BOARD_SIZE 15
@@ -44,6 +48,12 @@ public:
     std::string getName() const override {return SNAKE;};
 
 private:
+    enum Orientation {
+        LEFT,
+        RIGHT,
+        DOWN,
+        UP
+    };
     std::map<std::string, std::unique_ptr<IObject>> _objects;
     size_t _snakeSize;
 
@@ -57,12 +67,16 @@ private:
 
     void createWall(std::pair<int, int>, int);
     void createApple(int appleNb);
-};
 
-extern "C" {
-    std::unique_ptr<IGameModule> createInstanceIGame() {
-        return std::make_unique<Snake>();
-    }
-}
+    void startClock();
+    double getElapsedTime() const;
+
+    Orientation getSnakeOrientation();
+    std::pair<int, int> getSnakePartType(int snakePart);
+    std::chrono::steady_clock::time_point clock_start;
+
+    void moveSnake(int input);
+    void updateSnake();
+};
 
 #endif

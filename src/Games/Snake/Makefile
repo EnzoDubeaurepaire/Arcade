@@ -9,7 +9,7 @@ NAME		=	arcade_snake.so
 
 CXXFLAGS	+=	-Wall -Werror -Wextra
 CXXFLAGS	+=	-std=c++20 -fPIC
-CXXFLAGS	+=	-I.. -I../../Core
+CXXFLAGS	+=	-I.. -I../../Core -I../../Core/Objects
 
 LDFLAGS	+=	-shared
 ifeq ($(DEBUG),1)
@@ -20,7 +20,9 @@ LDFLAGS		+=	-shared
 
 CXX		=	g++
 
-SRC		=	Snake.cpp
+SRC		=	Snake.cpp \
+			../../Core/Objects/Sprite.cpp \
+			../../Core/Objects/Text.cpp
 
 OBJ		=	$(SRC:.cpp=.o)
 

@@ -34,7 +34,6 @@ void MainMenu::updateDisplayText() {
 
 void MainMenu::updateGamesText() {
     for (std::size_t i = 0; i < this->_games.size(); i++) {
-        std::cout << "game " << i << this->_games[i] << std::endl;
         if (!this->_objects.contains(this->_games[i]) && this->_games[i] != "Main Menu")
             this->addTextObject(this->_games[i], {200, 300 + 30 * i}, 16, this->_games[i], WHITE);
     }

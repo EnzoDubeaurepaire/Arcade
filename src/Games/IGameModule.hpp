@@ -16,7 +16,6 @@
 
 // project includes
 #include "IObject.hpp"
-#include "IDisplayModule.hpp"
 
 // Game names
 #define PACMAN "PACMAN"
