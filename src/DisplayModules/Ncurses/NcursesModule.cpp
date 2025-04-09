@@ -55,7 +55,7 @@ int NcursesModule::getInput() {
 
 void NcursesModule::openWindow() {
     initscr();
-    cbreak();
+    raw();
     keypad(stdscr, TRUE);
     noecho();
     curs_set(0);
