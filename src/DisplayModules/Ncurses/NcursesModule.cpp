@@ -1,17 +1,9 @@
-/*
-** EPITECH PROJECT, 2025
-** Arcade
-** File description:
-** NcursesModule
-*/
-
 #include "NcursesModule.hpp"
-
 #include <iostream>
 #include <fstream>
 #include <cmath>
 
-short getNearestColor(u_int32_t color) {
+short NcursesModule::getNearestColor(u_int32_t color) {
     unsigned char r = GET_RED(color);
     unsigned char g = GET_GREEN(color);
     unsigned char b = GET_BLUE(color);
@@ -27,7 +19,7 @@ short getNearestColor(u_int32_t color) {
     return COLOR_WHITE;
 }
 
-NcursesModule::NcursesModule() : _window(nullptr), _isOpen(false),
+NcursesModule::NcursesModule() : _isOpen(false),
                                  _gameWidth(800), _gameHeight(600) {}
 
 NcursesModule::~NcursesModule() {
@@ -38,7 +30,7 @@ int NcursesModule::getInput() {
     if (!_isOpen)
         return 0;
 
-    int ch = getch();
+    int ch = _ncurses.getKeyInput();
 
     if (ch == ERR)
         return 0;
@@ -71,33 +63,24 @@ int NcursesModule::getInput() {
 }
 
 void NcursesModule::openWindow() {
-    initscr();
-    raw();
-    keypad(stdscr, TRUE);
-    noecho();
-    curs_set(0);
-    timeout(50);
-    getmaxyx(stdscr, _termHeight, _termWidth);
-    _window = stdscr;
+    _ncurses.initialize();
+    _ncurses.getTerminalSize(_termWidth, _termHeight);
     _isOpen = true;
 
-    if (has_colors()) {
-        start_color();
-        init_pair(1, COLOR_WHITE, COLOR_BLACK);
-        init_pair(2, COLOR_RED, COLOR_BLACK);
-        init_pair(3, COLOR_GREEN, COLOR_BLACK);
-        init_pair(4, COLOR_BLUE, COLOR_BLACK);
-        init_pair(5, COLOR_YELLOW, COLOR_BLACK);
-        init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
-        init_pair(7, COLOR_CYAN, COLOR_BLACK);
+    if (_ncurses.hasColors()) {
+        _ncurses.initColor(1, COLOR_WHITE, COLOR_BLACK);
+        _ncurses.initColor(2, COLOR_RED, COLOR_BLACK);
+        _ncurses.initColor(3, COLOR_GREEN, COLOR_BLACK);
+        _ncurses.initColor(4, COLOR_BLUE, COLOR_BLACK);
+        _ncurses.initColor(5, COLOR_YELLOW, COLOR_BLACK);
+        _ncurses.initColor(6, COLOR_MAGENTA, COLOR_BLACK);
+        _ncurses.initColor(7, COLOR_CYAN, COLOR_BLACK);
     }
-    clear();
-    refresh();
 }
 
 void NcursesModule::closeWindow() {
     if (_isOpen) {
-        endwin();
+        _ncurses.cleanup();
         _isOpen = false;
     }
 }
@@ -115,8 +98,9 @@ std::pair<int, int> NcursesModule::scaleCoords(int x, int y) {
 void NcursesModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     if (!_isOpen)
         return;
-    erase();
-    int objectsDisplayed = 0;
+
+    _ncurses.clear();
+
     for (auto& [key, object] : objects) {
         if (object) {
             std::pair<int, int> pos = object->getPosition();
@@ -133,8 +117,9 @@ void NcursesModule::display(std::map<std::string, std::unique_ptr<IObject>>& obj
                         displayChar = *spritePtr;
                     }
                 }
+
                 IObject::SpriteProperties props = std::get<IObject::SpriteProperties>(object->getProperties());
-                if (has_colors()) {
+                if (_ncurses.hasColors()) {
                     short colorNum = getNearestColor(props.textColor);
                     switch (colorNum) {
                     case COLOR_RED: colorPair = 2; break;
@@ -145,19 +130,15 @@ void NcursesModule::display(std::map<std::string, std::unique_ptr<IObject>>& obj
                     case COLOR_CYAN: colorPair = 7; break;
                     default: colorPair = 1; break;
                     }
-                    attron(COLOR_PAIR(colorPair));
                 }
-                mvaddch(termY, termX, displayChar);
-                if (has_colors()) {
-                    attroff(COLOR_PAIR(colorPair));
-                }
-                objectsDisplayed++;
+
+                _ncurses.drawChar(termY, termX, displayChar, colorPair);
             }
             else if (object->getType() == TEXT) {
                 IObject::TextProperties props = std::get<IObject::TextProperties>(object->getProperties());
                 std::string displayText = props.text;
 
-                if (has_colors()) {
+                if (_ncurses.hasColors()) {
                     short colorNum = getNearestColor(props.color);
                     switch (colorNum) {
                     case COLOR_RED: colorPair = 2; break;
@@ -168,17 +149,14 @@ void NcursesModule::display(std::map<std::string, std::unique_ptr<IObject>>& obj
                     case COLOR_CYAN: colorPair = 7; break;
                     default: colorPair = 1; break;
                     }
-                    attron(COLOR_PAIR(colorPair));
                 }
-                mvprintw(termY, termX, "%s", displayText.c_str());
-                if (has_colors()) {
-                    attroff(COLOR_PAIR(colorPair));
-                }
-                objectsDisplayed++;
+
+                _ncurses.drawString(termY, termX, displayText, colorPair);
             }
         }
     }
-    refresh();
+
+    _ncurses.refresh();
 }
 
 void NcursesModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
