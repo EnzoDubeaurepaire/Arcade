@@ -189,11 +189,25 @@ void Core::unloadGame(const std::string &name) {
 }
 
 void Core::loadDisplay(const std::string &name) {
-    if (this->_displayModules.contains(name)) {
-        *this->_loadedDisplay = name;
-        this->getDisplay(name).initObject(this->getGame(*this->_loadedGame).getObjects());
-        this->getDisplay(name).openWindow();
+    if (!this->_displayModules.contains(name)) {
+        throw CoreException("Non existant display module");
     }
+
+    if (name != "NCURSES") {
+        const char* display = std::getenv("DISPLAY");
+        if (!display || !*display || display[0] != ':' || display[1] == '\0' ||
+            !isdigit(display[1]) || display[2] != '\0') {
+            throw CoreException("Invalid DISPLAY");
+        }
+    }
+
+    if (*this->_loadedDisplay != "") {
+        unloadDisplay(*this->_loadedDisplay);
+    }
+
+    *this->_loadedDisplay = name;
+    this->getDisplay(name).initObject(this->getGame(*this->_loadedGame).getObjects());
+    this->getDisplay(name).openWindow();
 }
 
 void Core::unloadDisplay(const std::string &name) {
