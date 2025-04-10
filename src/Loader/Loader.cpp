@@ -7,18 +7,18 @@
 
 #include "Loader.hpp"
 
-DynamicLibrary::DynamicLibrary(const std::string& path) {
+Arcade::DynamicLibrary::DynamicLibrary(const std::string& path) {
     this->handle = dlopen(path.c_str(), RTLD_LAZY);
     if (!this->handle)
         throw DynamicLibraryException(dlerror());
 }
 
-DynamicLibrary::~DynamicLibrary() {
+Arcade::DynamicLibrary::~DynamicLibrary() {
     if (this->handle)
         dlclose(this->handle);
 }
 
-void *DynamicLibrary::getSymbol(const std::string& symbolName) const {
+void *Arcade::DynamicLibrary::getSymbol(const std::string& symbolName) const {
     dlerror();
     void *symbol = dlsym(this->handle, symbolName.c_str());
     const char *error = dlerror();
@@ -27,7 +27,7 @@ void *DynamicLibrary::getSymbol(const std::string& symbolName) const {
     return symbol;
 }
 
-bool DynamicLibrary::isLoaded() {
+bool Arcade::DynamicLibrary::isLoaded() {
     struct link_map *map;
     if (dlinfo(this->handle, RTLD_DI_LINKMAP, &map) == 0)
         return true;

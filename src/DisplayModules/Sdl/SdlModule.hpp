@@ -33,36 +33,38 @@ struct SdlResource {
     void cleanup();
 };
 
-class SdlModule final : public IDisplayModule {
-public:
-    SdlModule();
-    ~SdlModule() override;
+namespace Arcade {
+    class SdlModule final : public IDisplayModule {
+    public:
+        SdlModule();
+        ~SdlModule() override;
 
-    void initObject(std::map<std::string, std::unique_ptr<IObject>>&) override;
+        void initObject(std::map<std::string, std::unique_ptr<IObject>>&) override;
 
-    int getInput() override;
-    std::pair<int, int> getMousePos() const override {return {0, 0};};
+        int getInput() override;
+        std::pair<int, int> getMousePos() const override {return {0, 0};};
 
-    std::string getName() const override {return "SDL";};
+        std::string getName() const override {return "SDL";};
 
-    void openWindow() override;
-    void closeWindow() override;
+        void openWindow() override;
+        void closeWindow() override;
 
-    void display(std::map<std::string, std::unique_ptr<IObject>>&) override;
+        void display(std::map<std::string, std::unique_ptr<IObject>>&) override;
 
-private:
-    bool _isInitialized = false;
-    SDL_Window* _window = nullptr;
-    SDL_Renderer* _renderer = nullptr;
+    private:
+        bool _isInitialized = false;
+        SDL_Window* _window = nullptr;
+        SDL_Renderer* _renderer = nullptr;
 
-    // Stockage des ressources pour une libération contrôlée
-    std::map<std::string, std::unique_ptr<SdlResource>> _resources;
-};
+        // Stockage des ressources pour une libération contrôlée
+        std::map<std::string, std::unique_ptr<SdlResource>> _resources;
+    };
+}
 
 #endif
 
 extern "C" {
-std::unique_ptr<IDisplayModule> createInstanceIDisplay() {
-    return std::make_unique<SdlModule>();
+std::unique_ptr<Arcade::IDisplayModule> createInstanceIDisplay() {
+    return std::make_unique<Arcade::SdlModule>();
 }
 }

@@ -3,7 +3,7 @@
 #include <fstream>
 #include <cmath>
 
-short NcursesModule::getNearestColor(u_int32_t color) {
+short Arcade::NcursesModule::getNearestColor(u_int32_t color) {
     unsigned char r = GET_RED(color);
     unsigned char g = GET_GREEN(color);
     unsigned char b = GET_BLUE(color);
@@ -19,14 +19,14 @@ short NcursesModule::getNearestColor(u_int32_t color) {
     return COLOR_WHITE;
 }
 
-NcursesModule::NcursesModule() : _isOpen(false),
+Arcade::NcursesModule::NcursesModule() : _isOpen(false),
                                  _gameWidth(800), _gameHeight(600) {}
 
-NcursesModule::~NcursesModule() {
-    closeWindow();
+Arcade::NcursesModule::~NcursesModule() {
+    this->closeWindow();
 }
 
-int NcursesModule::getInput() {
+int Arcade::NcursesModule::getInput() {
     if (!_isOpen)
         return 0;
 
@@ -62,7 +62,7 @@ int NcursesModule::getInput() {
     return 0;
 }
 
-void NcursesModule::openWindow() {
+void Arcade::NcursesModule::openWindow() {
     _ncurses.initialize();
     _ncurses.getTerminalSize(_termWidth, _termHeight);
     _isOpen = true;
@@ -78,14 +78,14 @@ void NcursesModule::openWindow() {
     }
 }
 
-void NcursesModule::closeWindow() {
+void Arcade::NcursesModule::closeWindow() {
     if (_isOpen) {
         _ncurses.cleanup();
         _isOpen = false;
     }
 }
 
-std::pair<int, int> NcursesModule::scaleCoords(int x, int y) {
+std::pair<int, int> Arcade::NcursesModule::scaleCoords(int x, int y) {
     double percentX = static_cast<double>(x) / _gameWidth;
     double percentY = static_cast<double>(y) / _gameHeight;
 
@@ -95,7 +95,7 @@ std::pair<int, int> NcursesModule::scaleCoords(int x, int y) {
     return {termX, termY};
 }
 
-void NcursesModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects) {
+void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     if (!_isOpen)
         return;
 
@@ -159,7 +159,7 @@ void NcursesModule::display(std::map<std::string, std::unique_ptr<IObject>>& obj
     _ncurses.refresh();
 }
 
-void NcursesModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
+void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     for (auto& [key, object] : objects) {
         if (object->getType() == SPRITE) {
             char spriteChar = '#';

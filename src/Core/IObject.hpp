@@ -28,54 +28,56 @@
 #define BLACK 0xff000000
 
 // Definition of the IObject interface
-class IObject
-{
-public:
-    struct TextProperties {
-        u_int32_t color;
-        size_t characterSize;
-        std::string text;
+namespace Arcade {
+    class IObject
+    {
+    public:
+        struct TextProperties {
+            u_int32_t color;
+            size_t characterSize;
+            std::string text;
+        };
+
+        struct SpriteProperties {
+            std::pair<int, int> size;
+            std::pair<int, int> offset;
+            std::pair<int, int> textSize;
+            std::pair<int, int> textOffset;
+            std::pair<float, float> scale;
+            u_int32_t textColor;
+        };
+
+        using Properties = std::variant<TextProperties, SpriteProperties>;
+
+        // Default virtual destructor
+        virtual ~IObject() = default;
+
+        // Position setter and getter
+        virtual void setPosition(std::pair<int, int>) = 0;
+        virtual std::pair<int, int> getPosition() const = 0;
+
+        // Sprite getter and setter
+        // !! getter returns a reference so the sprite properties can be modified by the display module
+        virtual void setSprite(std::any) = 0;
+        virtual std::any& getSprite() = 0;
+
+        // Texture getter and setter
+        // !! getter returns a reference so the texture properties can be modified by the display module
+        virtual std::any& getTexture() = 0;
+        virtual void setTexture(std::any) = 0;
+
+        // Texture path getter and setter
+        // !! The path represent the folder in which are stored the sprite sheets (MainMenu.png and MainMenu.txt)
+        virtual void setTexturePath(std::string) = 0;
+        virtual std::string getTexturePath() = 0;
+
+        // Properties getter and setter
+        virtual void setProperties(Properties properties) = 0;
+        virtual Properties getProperties() = 0;
+
+        // Gets the type of the object
+        virtual std::string getType() const = 0;
+
     };
-
-    struct SpriteProperties {
-        std::pair<int, int> size;
-        std::pair<int, int> offset;
-        std::pair<int, int> textSize;
-        std::pair<int, int> textOffset;
-        u_int32_t textColor;
-    };
-
-    using Properties = std::variant<TextProperties, SpriteProperties>;
-
-    // Default virtual destructor
-    virtual ~IObject() = default;
-
-    // Position setter and getter
-    virtual void setPosition(std::pair<int, int>) = 0;
-    virtual std::pair<int, int> getPosition() const = 0;
-
-    // Sprite getter and setter
-    // !! getter returns a reference so the sprite properties can be modified by the display module
-    virtual void setSprite(std::any) = 0;
-    virtual std::any& getSprite() = 0;
-
-    // Texture getter and setter
-    // !! getter returns a reference so the texture properties can be modified by the display module
-    virtual std::any& getTexture() = 0;
-    virtual void setTexture(std::any) = 0;
-
-    // Texture path getter and setter
-    // !! The path represent the folder in which are stored the sprite sheets (graphical.png and text.txt)
-    virtual void setTexturePath(std::string) = 0;
-    virtual std::string getTexturePath() = 0;
-
-    // Properties getter and setter
-    virtual void setProperties(Properties properties) = 0;
-    virtual Properties getProperties() = 0;
-
-    // Gets the type of the object
-    virtual std::string getType() const = 0;
-
-};
-
+}
 #endif

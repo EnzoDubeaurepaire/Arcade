@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-int SfmlModule::getInput() {
+int Arcade::SfmlModule::getInput() {
     sf::Event event{};
     while (this->_window->pollEvent(event)) {
         if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.control && event.key.code == sf::Keyboard::Q))
@@ -37,16 +37,17 @@ int SfmlModule::getInput() {
     return 0;
 }
 
-void SfmlModule::openWindow() {
-    this->_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "SFML Window");
+void Arcade::SfmlModule::openWindow() {
+    this->_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1920, 1080), "SFML Window");
+    this->_window->setKeyRepeatEnabled(false);
 }
 
-void SfmlModule::closeWindow() {
+void Arcade::SfmlModule::closeWindow() {
     if (this->_window->isOpen())
         this->_window->close();
 }
 
-void SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects) {
+void Arcade::SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     this->_window->clear();
     for (auto& object : objects) {
         if (object.second->getType() == SPRITE) {
@@ -77,11 +78,11 @@ void SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>& object
     this->_window->display();
 }
 
-void SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
+void Arcade::SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     for (auto& object : objects) {
         if (object.second->getType() == SPRITE) {
             auto texture = std::make_shared<sf::Texture>();
-            texture->loadFromFile(object.second->getTexturePath() + "/graphical.png");
+            texture->loadFromFile("./assets/" + object.second->getTexturePath() + ".png");
             auto sprite = std::make_shared<sf::Sprite>();
             sprite->setTexture(*texture);
             object.second->setTexture(texture);
@@ -89,7 +90,7 @@ void SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obj
         }
         if (object.second->getType() == TEXT) {
             auto font = std::make_shared<sf::Font>();
-            font->loadFromFile(object.second->getTexturePath() + "/font.ttf");
+            font->loadFromFile("./assets/" + object.second->getTexturePath() + ".ttf");
             auto text = std::make_shared<sf::Text>();
             text->setFont(*font);
             object.second->setTexture(font);
@@ -98,3 +99,8 @@ void SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obj
     }
 }
 
+extern "C" {
+    std::unique_ptr<Arcade::IDisplayModule> createInstanceIDisplay() {
+        return std::make_unique<Arcade::SfmlModule>();
+    }
+}

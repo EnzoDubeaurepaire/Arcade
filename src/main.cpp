@@ -13,9 +13,9 @@ int main(int ac, char **av) {
         return EXIT_FAILURE;
     }
     try {
-        Core core(av[1]);
+        Arcade::Core core(av[1]);
         core.run();
-    } catch (const Core::CoreException& e) {
+    } catch (const Arcade::Core::CoreException& e) {
         std::cerr << e.what() << std::endl;
     }
     return 0;
