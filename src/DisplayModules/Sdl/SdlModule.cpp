@@ -28,15 +28,15 @@ void SdlResource::cleanup() {
     }
 }
 
-SdlModule::SdlModule() = default;
+Arcade::SdlModule::SdlModule() = default;
 
-SdlModule::~SdlModule() {
+Arcade::SdlModule::~SdlModule() {
     _resources.clear();
 
     closeWindow();
 }
 
-int SdlModule::getInput() {
+int Arcade::SdlModule::getInput() {
     SDL_Event event{};
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN &&
@@ -63,7 +63,7 @@ int SdlModule::getInput() {
     return 0;
 }
 
-void SdlModule::openWindow() {
+void Arcade::SdlModule::openWindow() {
     if (_isInitialized)
         return;
 
@@ -106,7 +106,7 @@ void SdlModule::openWindow() {
     _isInitialized = true;
 }
 
-void SdlModule::closeWindow() {
+void Arcade::SdlModule::closeWindow() {
     if (!_isInitialized) return;
 
     if (_renderer) {
@@ -123,7 +123,7 @@ void SdlModule::closeWindow() {
     _isInitialized = false;
 }
 
-void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects) {
+void Arcade::SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     if (!_isInitialized || !_renderer) return;
 
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
@@ -198,7 +198,7 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
     SDL_RenderPresent(_renderer);
 }
 
-void SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
+void Arcade::SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     if (!_isInitialized) {
         openWindow();
     }

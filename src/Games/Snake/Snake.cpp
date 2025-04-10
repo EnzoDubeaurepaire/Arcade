@@ -52,16 +52,16 @@ void Arcade::Snake::moveSnake(int input) {
     auto snakePos = this->_objects["snake" + std::to_string(1)]->getPosition();
     Orientation direction;
     switch (this->_lastInput) {
-        case KEY_UP:
+        case K_UP:
             direction = UP;
             break;
-        case KEY_DOWN:
+        case K_DOWN:
             direction = DOWN;
             break;
-        case KEY_LEFT:
+        case K_LEFT:
             direction = LEFT;
             break;
-        case KEY_RIGHT:
+        case K_RIGHT:
             direction = RIGHT;
             break;
         default:

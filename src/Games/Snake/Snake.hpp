@@ -59,7 +59,7 @@ namespace Arcade {
         };
         std::map<std::string, std::unique_ptr<IObject>> _objects;
         size_t _snakeSize;
-        int _lastInput = KEY_RIGHT;
+        int _lastInput = K_RIGHT;
         int _score = 0;
 
         std::random_device _rd;
