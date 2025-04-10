@@ -22,6 +22,7 @@ GAME_LIBS	=
 
 DISPLAY_LIBS	=	src/DisplayModules/Sfml \
 			        src/DisplayModules/Ncurses \
+			        src/DisplayModules/Sdl \
 
 CXXFLAGS	+=	-Wall -Wextra -Werror
 CXXFLAGS	+=	-fno-gnu-unique -std=c++20 -ldl
