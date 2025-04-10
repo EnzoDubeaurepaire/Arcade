@@ -36,58 +36,60 @@
 #define CORNER_UP_RIGHT {ASSET_SIZE * 2, 0}
 #define CORNER_DOWN_RIGHT {ASSET_SIZE * 3, 0}
 
-class Snake final : public IGameModule {
-public:
-    Snake();
-    ~Snake() override = default;
+namespace Arcade {
+    class Snake final : public Arcade::IGameModule {
+    public:
+        Snake();
+        ~Snake() override = default;
 
-    bool update(std::pair<int, int> mousePos, int input) override;
+        bool update(std::pair<int, int> mousePos, int input) override;
 
-    std::map<std::string, std::unique_ptr<IObject>>& getObjects() override {return this->_objects;};
+        std::map<std::string, std::unique_ptr<IObject>>& getObjects() override {return this->_objects;};
 
-    std::size_t getScore() const override {return this->_snakeSize;};
+        std::size_t getScore() const override {return this->_snakeSize;};
 
-    std::string getName() const override {return SNAKE;};
+        std::string getName() const override {return SNAKE;};
 
-private:
-    enum Orientation {
-        LEFT,
-        RIGHT,
-        DOWN,
-        UP
+    private:
+        enum Orientation {
+            LEFT,
+            RIGHT,
+            DOWN,
+            UP
+        };
+        std::map<std::string, std::unique_ptr<IObject>> _objects;
+        size_t _snakeSize;
+        int _lastInput = KEY_RIGHT;
+
+        std::random_device _rd;
+        std::mt19937 _gen;
+        std::uniform_int_distribution<> _distrib;
+
+        void initSnake();
+        void initWalls();
+        void initApples();
+
+        void createWall(std::pair<int, int>, int);
+        void createApple(int appleNb);
+
+        void startClock();
+        double getElapsedTime() const;
+
+        Orientation getSnakeOrientation();
+        std::pair<int, int> getSnakePartType(int snakePart);
+        std::chrono::steady_clock::time_point clock_start;
+
+        void moveSnake(int input);
+        void updateSnake();
+
+        bool collideWall();
+        void checkApples();
+
+        void addSnakePart();
+
+        void initScore();
+        void updateScore();
     };
-    std::map<std::string, std::unique_ptr<IObject>> _objects;
-    size_t _snakeSize;
-    int _lastInput = KEY_RIGHT;
-
-    std::random_device _rd;
-    std::mt19937 _gen;
-    std::uniform_int_distribution<> _distrib;
-
-    void initSnake();
-    void initWalls();
-    void initApples();
-
-    void createWall(std::pair<int, int>, int);
-    void createApple(int appleNb);
-
-    void startClock();
-    double getElapsedTime() const;
-
-    Orientation getSnakeOrientation();
-    std::pair<int, int> getSnakePartType(int snakePart);
-    std::chrono::steady_clock::time_point clock_start;
-
-    void moveSnake(int input);
-    void updateSnake();
-
-    bool collideWall();
-    void checkApples();
-
-    void addSnakePart();
-
-    void initScore();
-    void updateScore();
-};
+}
 
 #endif

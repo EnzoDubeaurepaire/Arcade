@@ -13,7 +13,7 @@
 #include "Text.hpp"
 
 
-Snake::Snake() : _gen(_rd()), _distrib(1, BOARD_SIZE - 1) {
+Arcade::Snake::Snake() : _gen(_rd()), _distrib(1, BOARD_SIZE - 1) {
     this->_snakeSize = 3;
     this->initSnake();
     this->initWalls();
@@ -22,7 +22,7 @@ Snake::Snake() : _gen(_rd()), _distrib(1, BOARD_SIZE - 1) {
     this->initScore();
 }
 
-void Snake::initScore() {
+void Arcade::Snake::initScore() {
     this->_objects["score"] = std::make_unique<Text>("Snake/font");
     this->_objects["score"]->setPosition({ASSET_SIZE * (BOARD_SIZE + 3), 32});
     auto properties = std::get<IObject::TextProperties>(this->_objects["score"]->getProperties());
@@ -32,13 +32,13 @@ void Snake::initScore() {
     this->_objects["score"]->setProperties(properties);
 }
 
-void Snake::updateScore() {
+void Arcade::Snake::updateScore() {
     auto properties = std::get<IObject::TextProperties>(this->_objects["score"]->getProperties());
     properties.text = "Score: " + std::to_string(_snakeSize);
     this->_objects["score"]->setProperties(properties);
 }
 
-void Snake::moveSnake(int input) {
+void Arcade::Snake::moveSnake(int input) {
     if (input != 0)
         this->_lastInput = input;
     if (this->getElapsedTime() < 0.2)
@@ -87,7 +87,7 @@ void Snake::moveSnake(int input) {
     this->_objects["snake1"]->setPosition(snakePos);
 }
 
-void Snake::updateSnake() {
+void Arcade::Snake::updateSnake() {
     for (size_t i = 1; i <= this->_snakeSize; i++) {
         auto properties = std::get<IObject::SpriteProperties>(this->_objects["snake" + std::to_string(i)]->getProperties());
         properties.offset = this->getSnakePartType(i);
@@ -98,7 +98,7 @@ void Snake::updateSnake() {
     }
 }
 
-bool Snake::collideWall() {
+bool Arcade::Snake::collideWall() {
     std::vector<std::pair<int, int>> walls;
 
     for (auto& object : this->_objects)
@@ -111,7 +111,7 @@ bool Snake::collideWall() {
     return true;
 }
 
-void Snake::checkApples() {
+void Arcade::Snake::checkApples() {
     for (auto& object : this->_objects)
         if (object.first.starts_with("apple"))
             if (object.second->getPosition() == this->_objects["snake1"]->getPosition()) {
@@ -120,7 +120,7 @@ void Snake::checkApples() {
             }
 }
 
-void Snake::addSnakePart() {
+void Arcade::Snake::addSnakePart() {
     std::pair<int, int> tailPos = this->_objects["snake" + std::to_string(this->_snakeSize)]->getPosition();
 
     std::vector<std::pair<int, int>> possiblePos;
@@ -152,7 +152,7 @@ void Snake::addSnakePart() {
     this->_snakeSize++;
 }
 
-bool Snake::update(std::pair<int, int> mousePos, int input) {
+bool Arcade::Snake::update(std::pair<int, int> mousePos, int input) {
     (void)mousePos;
     this->moveSnake(input);
     if (this->collideWall()) {
@@ -171,7 +171,7 @@ bool Snake::update(std::pair<int, int> mousePos, int input) {
     return false;
 }
 
-void Snake::initSnake() {
+void Arcade::Snake::initSnake() {
     this->_objects["snake1"] = std::make_unique<Sprite>("Snake/Snake");
     this->_objects["snake1"]->setPosition({ASSET_SIZE * (BOARD_SIZE / 2 + 2), ASSET_SIZE * (BOARD_SIZE / 2  + 1)});
     auto properties = std::get<IObject::SpriteProperties>(this->_objects["snake1"]->getProperties());
@@ -209,7 +209,7 @@ void Snake::initSnake() {
     this->_objects["snake3"]->setProperties(properties);
 }
 
-void Snake::createWall(std::pair<int, int> pos, int nb) {
+void Arcade::Snake::createWall(std::pair<int, int> pos, int nb) {
     std::string name = "wall" + std::to_string(nb);
     this->_objects[name] = std::make_unique<Sprite>("Snake/Snake");
     this->_objects[name]->setPosition(pos);
@@ -224,7 +224,7 @@ void Snake::createWall(std::pair<int, int> pos, int nb) {
     this->_objects[name]->setProperties(properties);
 }
 
-void Snake::initWalls() {
+void Arcade::Snake::initWalls() {
     int nb = 0;
     for (int i = 0; i < BOARD_SIZE + 2; i++) {
         createWall({ASSET_SIZE * i, 0}, nb++);
@@ -236,7 +236,7 @@ void Snake::initWalls() {
     }
 }
 
-void Snake::createApple(int appleNb) {
+void Arcade::Snake::createApple(int appleNb) {
     std::vector<std::pair<int, int>> physicalObjects;
     std::string name = "apple" + std::to_string(appleNb);
 
@@ -264,21 +264,21 @@ void Snake::createApple(int appleNb) {
     }
 }
 
-void Snake::initApples() {
+void Arcade::Snake::initApples() {
     this->createApple(1);
     this->createApple(2);
 }
 
-void Snake::startClock() {
+void Arcade::Snake::startClock() {
     this->clock_start = std::chrono::steady_clock::now();
 }
 
-double Snake::getElapsedTime() const {
+double Arcade::Snake::getElapsedTime() const {
     const std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - this->clock_start;
     return elapsed.count();
 }
 
-Snake::Orientation Snake::getSnakeOrientation() {
+Arcade::Snake::Orientation Arcade::Snake::getSnakeOrientation() {
     std::string snakeA = "snake1";
     std::string snakeB = "snake2";
     if (this->_objects["snake1"]->getPosition().first == this->_objects["snake2"]->getPosition().first) {
@@ -291,7 +291,7 @@ Snake::Orientation Snake::getSnakeOrientation() {
     return RIGHT;
 }
 
-std::pair<int, int> Snake::getSnakePartType(int snakePart) {
+std::pair<int, int> Arcade::Snake::getSnakePartType(int snakePart) {
     if (snakePart == 1)
         switch (this->getSnakeOrientation()) {
             case UP:
@@ -359,7 +359,7 @@ std::pair<int, int> Snake::getSnakePartType(int snakePart) {
 
 
 extern "C" {
-    std::unique_ptr<IGameModule> createInstanceIGame() {
-        return std::make_unique<Snake>();
+    std::unique_ptr<Arcade::IGameModule> createInstanceIGame() {
+        return std::make_unique<Arcade::Snake>();
     }
 }

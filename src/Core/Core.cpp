@@ -11,7 +11,7 @@
 
 #include "MainMenu.hpp"
 
-Core::Core(const std::string& baseDisplay) {
+Arcade::Core::Core(const std::string& baseDisplay) {
     this->_loadedGame = std::make_shared<std::string>("Main Menu");
     this->_loadedDisplay = std::make_shared<std::string>("");
     this->_gameModules["Main Menu"] = std::pair(std::make_unique<DynamicLibrary>(), std::make_unique<MainMenu>(this->_loadedGame, this->_loadedDisplay));
@@ -19,7 +19,7 @@ Core::Core(const std::string& baseDisplay) {
     this->updateLibraries();
 }
 
-void Core::loadFirstLib(const std::string& name) {
+void Arcade::Core::loadFirstLib(const std::string& name) {
     if (!std::filesystem::exists("./lib") || !std::filesystem::is_directory("./lib")) {
         throw CoreException("Libraries not found");
     }
@@ -39,15 +39,15 @@ void Core::loadFirstLib(const std::string& name) {
     }
 }
 
-IGameModule& Core::getGame(const std::string& name) {
+Arcade::IGameModule& Arcade::Core::getGame(const std::string& name) {
     return *(this->_gameModules[name].second);
 }
 
-IDisplayModule& Core::getDisplay(const std::string& name) {
+Arcade::IDisplayModule& Arcade::Core::getDisplay(const std::string& name) {
     return *(this->_displayModules[name].second);
 }
 
-bool Core::isLibLoaded(const std::string &name) {
+bool Arcade::Core::isLibLoaded(const std::string &name) {
     if (name == "Main Menu")
         return true;
     if (this->_gameModules.contains(name)) {
@@ -59,20 +59,20 @@ bool Core::isLibLoaded(const std::string &name) {
     return false;
 }
 
-void Core::getDisplayFallback() {
+void Arcade::Core::getDisplayFallback() {
     if (this->_displayModules.empty())
         throw CoreException("No display modules found");
     this->loadDisplay(this->_displayModules.begin()->first);
 }
 
-void Core::getGameFallback() {
+void Arcade::Core::getGameFallback() {
     if (this->_gameModules.empty()) {
         *this->_loadedGame = "Main Menu";
     } else
         this->loadGame(this->_gameModules.begin()->first);
 }
 
-void Core::updateLibraries() {
+void Arcade::Core::updateLibraries() {
     if (!std::filesystem::exists("./lib") || !std::filesystem::is_directory("./lib")) {
         throw CoreException("Libraries not found");
     }
@@ -114,7 +114,7 @@ void Core::updateLibraries() {
         this->getGameFallback();
 }
 
-void Core::handleInputs() {
+void Arcade::Core::handleInputs() {
     this->_input = this->getDisplay(*this->_loadedDisplay).getInput();
     this->_mousePos = this->getDisplay(*this->_loadedDisplay).getMousePos();
 
@@ -137,7 +137,7 @@ void Core::handleInputs() {
     }
 }
 
-std::vector<std::string> Core::getDisplayList() const {
+std::vector<std::string> Arcade::Core::getDisplayList() const {
     std::vector<std::string> vec;
 
     for (const auto& pair : this->_displayModules)
@@ -145,7 +145,7 @@ std::vector<std::string> Core::getDisplayList() const {
     return vec;
 }
 
-std::vector<std::string> Core::getGamesList() const {
+std::vector<std::string> Arcade::Core::getGamesList() const {
     std::vector<std::string> vec;
 
     for (const auto& pair : this->_gameModules)
@@ -155,7 +155,7 @@ std::vector<std::string> Core::getGamesList() const {
 }
 
 
-void Core::updateLoadedGame() {
+void Arcade::Core::updateLoadedGame() {
     if (*this->_loadedGame == "Main Menu") {
         try {
             dynamic_cast<MainMenu&>(this->getGame("Main Menu")).updateDisplay(this->getDisplayList());
@@ -169,7 +169,7 @@ void Core::updateLoadedGame() {
 }
 
 
-void Core::run() {
+void Arcade::Core::run() {
     while (this->_running) {
         this->updateLibraries();
         this->handleInputs();
@@ -179,17 +179,17 @@ void Core::run() {
     }
 }
 
-void Core::loadGame(const std::string &name) {
+void Arcade::Core::loadGame(const std::string &name) {
     if (this->_gameModules.contains(name)) {
         *this->_loadedGame = name;
     }
 }
 
-void Core::unloadGame(const std::string &name) {
+void Arcade::Core::unloadGame(const std::string &name) {
     (void)name;
 }
 
-void Core::loadDisplay(const std::string &name) {
+void Arcade::Core::loadDisplay(const std::string &name) {
     if (this->_displayModules.contains(name)) {
         *this->_loadedDisplay = name;
         this->getDisplay(name).initObject(this->getGame(*this->_loadedGame).getObjects());
@@ -197,13 +197,13 @@ void Core::loadDisplay(const std::string &name) {
     }
 }
 
-void Core::unloadDisplay(const std::string &name) {
+void Arcade::Core::unloadDisplay(const std::string &name) {
     if (this->_displayModules.contains(name)) {
         this->getDisplay(name).closeWindow();
     }
 }
 
-void Core::goToNextGame() {
+void Arcade::Core::goToNextGame() {
     if (this->_gameModules.size() <= 2)
         return;
     auto it = this->_gameModules.begin();
@@ -223,7 +223,7 @@ void Core::goToNextGame() {
     this->loadGame(it->first);
 }
 
-void Core::goToNextDisplay() {
+void Arcade::Core::goToNextDisplay() {
     if (this->_displayModules.size() <= 1)
         return;
     auto it = this->_displayModules.begin();

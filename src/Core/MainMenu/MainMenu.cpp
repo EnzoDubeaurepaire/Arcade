@@ -10,7 +10,7 @@
 #include <iostream>
 
 
-MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::shared_ptr<std::string>& loadedDisplay) {
+Arcade::MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::shared_ptr<std::string>& loadedDisplay) {
     this->_loadedGame = loadedGame;
     this->_loadedDisplay = loadedDisplay;
     this->_selectedGame = 0;
@@ -26,13 +26,13 @@ MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::sh
     this->addTextObject("title", {150, 50}, TITLE_SIZE, "Arcacade", WHITE);
 }
 
-void MainMenu::updateDisplayText() {
+void Arcade::MainMenu::updateDisplayText() {
     for (std::size_t i = 0; i < this->_display.size(); i++)
         if (!this->_objects.contains(this->_display[i]))
             this->addTextObject(this->_display[i], {400, 300 + 30 * i}, 16, this->_display[i], WHITE);
 }
 
-void MainMenu::updateGamesText() {
+void Arcade::MainMenu::updateGamesText() {
     for (std::size_t i = 0; i < this->_games.size(); i++) {
         if (!this->_objects.contains(this->_games[i]) && this->_games[i] != "Main Menu")
             this->addTextObject(this->_games[i], {200, 300 + 30 * i}, 16, this->_games[i], WHITE);
@@ -40,7 +40,7 @@ void MainMenu::updateGamesText() {
 }
 
 
-bool MainMenu::update(std::pair<int, int> pos, int input) {
+bool Arcade::MainMenu::update(std::pair<int, int> pos, int input) {
     (void)pos;
     std::vector<std::string> toRemove;
     for (const auto& object : this->_objects) {
@@ -90,27 +90,27 @@ bool MainMenu::update(std::pair<int, int> pos, int input) {
     return false;
 }
 
-void MainMenu::removeCharFromPlayer() {
+void Arcade::MainMenu::removeCharFromPlayer() {
     if (this->_playerName.empty())
         return;
     this->_playerName.pop_back();
 }
 
-void MainMenu::addCharToPlayer(const char c) {
+void Arcade::MainMenu::addCharToPlayer(const char c) {
     if (this->_playerName.size() >= USERNAME_MAX_LENGTH)
         return;
     this->_playerName.push_back(c);
 }
 
-void MainMenu::updateDisplay(const std::vector<std::string> &display) {
+void Arcade::MainMenu::updateDisplay(const std::vector<std::string> &display) {
     this->_display = display;
 }
 
-void MainMenu::updateGames(const std::vector<std::string> &games) {
+void Arcade::MainMenu::updateGames(const std::vector<std::string> &games) {
     this->_games = games;
 }
 
-void MainMenu::addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, const uint32_t color) {
+void Arcade::MainMenu::addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, const uint32_t color) {
     this->_objects[name] = std::make_unique<Text>("MainMenu/font");
     this->_objects[name]->setPosition({pos.first, pos.second});
     auto properties = std::get<IObject::TextProperties>(this->_objects[name]->getProperties());
@@ -120,7 +120,7 @@ void MainMenu::addTextObject(const std::string& name, std::pair<int, int> pos, i
     this->_objects[name]->setProperties(properties);
 }
 
-void MainMenu::moveSelectorDown() {
+void Arcade::MainMenu::moveSelectorDown() {
     auto [x, y] = _objects["selector"]->getPosition();
     if (this->_selectorPos.first == 0) {
         if (static_cast<int>(this->_games.size()) < this->_selectorPos.second) {
@@ -135,7 +135,7 @@ void MainMenu::moveSelectorDown() {
     }
 }
 
-void MainMenu::moveSelectorUp() {
+void Arcade::MainMenu::moveSelectorUp() {
     auto [x, y] = _objects["selector"]->getPosition();
     if (this->_selectorPos.first == 0) {
         if (this->_selectorPos.second > 0) {
@@ -150,7 +150,7 @@ void MainMenu::moveSelectorUp() {
     }
 }
 
-void MainMenu::moveSelectorLeft() {
+void Arcade::MainMenu::moveSelectorLeft() {
     if (this->_selectorPos.first == 1) {
         auto [x, y] = _objects["selector"]->getPosition();
         _objects["selector"]->setPosition({x - 200, y});
@@ -162,7 +162,7 @@ void MainMenu::moveSelectorLeft() {
     }
 }
 
-void MainMenu::moveSelectorRight() {
+void Arcade::MainMenu::moveSelectorRight() {
     if (this->_selectorPos.first == 0) {
         auto [x, y] = _objects["selector"]->getPosition();
         _objects["selector"]->setPosition({x + 200, y});
@@ -174,7 +174,7 @@ void MainMenu::moveSelectorRight() {
     }
 }
 
-void MainMenu::select() {
+void Arcade::MainMenu::select() {
     if (this->_selectorPos.first == 0) {
         this->_selectedGame = this->_selectorPos.second;
         for (const auto& gameName : this->_games) {
@@ -199,7 +199,7 @@ void MainMenu::select() {
     }
 }
 
-void MainMenu::launch() const {
+void Arcade::MainMenu::launch() const {
     if (this->_playerName.empty())
         return;
     if (this->_games.empty())
