@@ -41,6 +41,7 @@ namespace Arcade {
         std::string getPlayerName() {return _playerName;};
 
 
+
     private:
         std::map<std::string, std::unique_ptr<IObject>> _objects;
         std::string _playerName;

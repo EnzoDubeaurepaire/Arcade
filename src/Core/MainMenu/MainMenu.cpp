@@ -14,6 +14,7 @@ Arcade::MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const
     this->_loadedGame = loadedGame;
     this->_loadedDisplay = loadedDisplay;
     this->_selectedGame = 0;
+    this->_selectorPos = {0, 0};  // Initialiser la position du curseur
 
     this->_objects["selector"] = std::make_unique<Sprite>("MainMenu/MainMenu");
     this->_objects["selector"]->setPosition({150, 300});
@@ -56,19 +57,19 @@ bool Arcade::MainMenu::update(std::pair<int, int> pos, int input) {
     switch (input) {
         case 0:
             break;
-        case KEY_LEFT:
+        case K_LEFT:
             this->moveSelectorLeft();
             break;
-        case KEY_RIGHT:
+        case K_RIGHT:
             this->moveSelectorRight();
             break;
-        case KEY_UP:
+        case K_UP:
             this->moveSelectorUp();
             break;
-        case KEY_DOWN:
+        case K_DOWN:
             this->moveSelectorDown();
             break;
-        case KEY_BACKSPACE:
+        case K_BACKSPACE:
             this->removeCharFromPlayer();
             break;
         case ' ':
@@ -123,12 +124,12 @@ void Arcade::MainMenu::addTextObject(const std::string& name, std::pair<int, int
 void Arcade::MainMenu::moveSelectorDown() {
     auto [x, y] = _objects["selector"]->getPosition();
     if (this->_selectorPos.first == 0) {
-        if (static_cast<int>(this->_games.size()) < this->_selectorPos.second) {
+        if (this->_selectorPos.second < static_cast<int>(this->_games.size()) - 1) {
             _objects["selector"]->setPosition({x, y + 30});
             this->_selectorPos.second++;
         }
     } else {
-        if (static_cast<int>(this->_display.size()) < this->_selectorPos.second) {
+        if (this->_selectorPos.second < static_cast<int>(this->_display.size()) - 1) {
             _objects["selector"]->setPosition({x, y + 30});
             this->_selectorPos.second++;
         }
@@ -137,16 +138,9 @@ void Arcade::MainMenu::moveSelectorDown() {
 
 void Arcade::MainMenu::moveSelectorUp() {
     auto [x, y] = _objects["selector"]->getPosition();
-    if (this->_selectorPos.first == 0) {
-        if (this->_selectorPos.second > 0) {
-            _objects["selector"]->setPosition({x, y - 30});
-            this->_selectorPos.second--;
-        }
-    } else {
-        if (this->_selectorPos.second > 0) {
-            _objects["selector"]->setPosition({x, y - 30});
-            this->_selectorPos.second--;
-        }
+    if (this->_selectorPos.second > 0) {
+        _objects["selector"]->setPosition({x, y - 30});
+        this->_selectorPos.second--;
     }
 }
 
