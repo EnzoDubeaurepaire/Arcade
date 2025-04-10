@@ -38,6 +38,8 @@ namespace Arcade {
         void updateGames(const std::vector<std::string>& games);
         void updateDisplay(const std::vector<std::string>& display);
 
+        std::string getPlayerName() {return _playerName;};
+
 
     private:
         std::map<std::string, std::unique_ptr<IObject>> _objects;

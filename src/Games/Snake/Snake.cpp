@@ -157,6 +157,7 @@ bool Arcade::Snake::update(std::pair<int, int> mousePos, int input) {
     this->moveSnake(input);
     if (this->collideWall()) {
         this->_objects.clear();
+        this->_score = _snakeSize;
         this->_snakeSize = 3;
         this->initSnake();
         this->initWalls();

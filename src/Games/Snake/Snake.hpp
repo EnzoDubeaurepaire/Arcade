@@ -46,7 +46,7 @@ namespace Arcade {
 
         std::map<std::string, std::unique_ptr<IObject>>& getObjects() override {return this->_objects;};
 
-        std::size_t getScore() const override {return this->_snakeSize;};
+        std::size_t getScore() const override {return this->_score;};
 
         std::string getName() const override {return SNAKE;};
 
@@ -60,6 +60,7 @@ namespace Arcade {
         std::map<std::string, std::unique_ptr<IObject>> _objects;
         size_t _snakeSize;
         int _lastInput = KEY_RIGHT;
+        int _score = 0;
 
         std::random_device _rd;
         std::mt19937 _gen;

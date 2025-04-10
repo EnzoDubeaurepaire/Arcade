@@ -8,6 +8,7 @@
 #include "Core.hpp"
 #include <algorithm>
 #include <filesystem>
+#include <fstream>
 
 #include "MainMenu.hpp"
 
@@ -164,8 +165,10 @@ void Arcade::Core::updateLoadedGame() {
             throw CoreException(e.what());
         }
     }
-    if (this->getGame(*this->_loadedGame).update(this->_mousePos, this->_input))
+    if (this->getGame(*this->_loadedGame).update(this->_mousePos, this->_input)) {
+        this->unloadGame(*this->_loadedGame);
         this->loadGame("Main Menu");
+    }
 }
 
 
@@ -186,7 +189,13 @@ void Arcade::Core::loadGame(const std::string &name) {
 }
 
 void Arcade::Core::unloadGame(const std::string &name) {
-    (void)name;
+    std::string toWrite = name + " " + dynamic_cast<MainMenu&>(this->getGame("Main Menu")).getPlayerName() + " " + std::to_string(this->getGame(*this->_loadedGame).getScore());
+    std::ofstream file(".save", std::ios::app);
+
+    if (!file.is_open())
+        throw CoreException("Could not open save file.");
+    file << toWrite << std::endl;
+    file.close();
 }
 
 void Arcade::Core::loadDisplay(const std::string &name) {
