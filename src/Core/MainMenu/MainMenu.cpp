@@ -15,7 +15,7 @@ MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::sh
     this->_loadedDisplay = loadedDisplay;
     this->_selectedGame = 0;
 
-    this->_objects["selector"] = std::make_unique<Sprite>("./ressources/MainMenu");
+    this->_objects["selector"] = std::make_unique<Sprite>("MainMenu/MainMenu");
     this->_objects["selector"]->setPosition({150, 300});
     auto spriteProperties = std::get<IObject::SpriteProperties>(this->_objects["selector"]->getProperties());
     spriteProperties.offset = {0, 0};
@@ -111,7 +111,7 @@ void MainMenu::updateGames(const std::vector<std::string> &games) {
 }
 
 void MainMenu::addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, const uint32_t color) {
-    this->_objects[name] = std::make_unique<Text>("./ressources/MainMenu");
+    this->_objects[name] = std::make_unique<Text>("MainMenu/font");
     this->_objects[name]->setPosition({pos.first, pos.second});
     auto properties = std::get<IObject::TextProperties>(this->_objects[name]->getProperties());
     properties.text = text;

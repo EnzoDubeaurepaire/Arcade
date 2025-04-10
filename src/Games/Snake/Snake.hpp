@@ -15,6 +15,8 @@
 #include <chrono>
 #include <thread>
 
+#include "KeyCodes.hpp"
+
 #define ASSET_SIZE 64
 #define BOARD_SIZE 15
 #define BODY_HORIZONTAL {ASSET_SIZE, ASSET_SIZE * 3}
@@ -56,6 +58,7 @@ private:
     };
     std::map<std::string, std::unique_ptr<IObject>> _objects;
     size_t _snakeSize;
+    int _lastInput = KEY_RIGHT;
 
     std::random_device _rd;
     std::mt19937 _gen;
@@ -82,6 +85,9 @@ private:
     void checkApples();
 
     void addSnakePart();
+
+    void initScore();
+    void updateScore();
 };
 
 #endif

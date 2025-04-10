@@ -39,6 +39,7 @@ int SfmlModule::getInput() {
 
 void SfmlModule::openWindow() {
     this->_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1920, 1080), "SFML Window");
+    this->_window->setKeyRepeatEnabled(false);
 }
 
 void SfmlModule::closeWindow() {
@@ -81,7 +82,7 @@ void SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obj
     for (auto& object : objects) {
         if (object.second->getType() == SPRITE) {
             auto texture = std::make_shared<sf::Texture>();
-            texture->loadFromFile(object.second->getTexturePath() + "/graphical.png");
+            texture->loadFromFile("./assets/" + object.second->getTexturePath() + ".png");
             auto sprite = std::make_shared<sf::Sprite>();
             sprite->setTexture(*texture);
             object.second->setTexture(texture);
@@ -89,7 +90,7 @@ void SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obj
         }
         if (object.second->getType() == TEXT) {
             auto font = std::make_shared<sf::Font>();
-            font->loadFromFile(object.second->getTexturePath() + "/font.ttf");
+            font->loadFromFile("./assets/" + object.second->getTexturePath() + ".ttf");
             auto text = std::make_shared<sf::Text>();
             text->setFont(*font);
             object.second->setTexture(font);
@@ -98,3 +99,8 @@ void SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obj
     }
 }
 
+extern "C" {
+    std::unique_ptr<IDisplayModule> createInstanceIDisplay() {
+        return std::make_unique<SfmlModule>();
+    }
+}

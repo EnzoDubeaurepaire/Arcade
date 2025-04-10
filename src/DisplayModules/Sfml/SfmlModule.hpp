@@ -37,9 +37,3 @@ private:
 };
 
 #endif
-
-extern "C" {
-    std::unique_ptr<IDisplayModule> createInstanceIDisplay() {
-        return std::make_unique<SfmlModule>();
-    }
-}

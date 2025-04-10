@@ -42,6 +42,7 @@ public:
         std::pair<int, int> offset;
         std::pair<int, int> textSize;
         std::pair<int, int> textOffset;
+        std::pair<float, float> scale;
         u_int32_t textColor;
     };
 
@@ -65,7 +66,7 @@ public:
     virtual void setTexture(std::any) = 0;
 
     // Texture path getter and setter
-    // !! The path represent the folder in which are stored the sprite sheets (graphical.png and text.txt)
+    // !! The path represent the folder in which are stored the sprite sheets (MainMenu.png and MainMenu.txt)
     virtual void setTexturePath(std::string) = 0;
     virtual std::string getTexturePath() = 0;
 

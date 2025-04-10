@@ -10,18 +10,38 @@
 
 #include "KeyCodes.hpp"
 #include "Sprite.hpp"
+#include "Text.hpp"
 
 
-Snake::Snake() : _gen(_rd()), _distrib(0, BOARD_SIZE) {
+Snake::Snake() : _gen(_rd()), _distrib(1, BOARD_SIZE - 1) {
     this->_snakeSize = 3;
     this->initSnake();
     this->initWalls();
     this->initApples();
     this->startClock();
+    this->initScore();
+}
+
+void Snake::initScore() {
+    this->_objects["score"] = std::make_unique<Text>("Snake/font");
+    this->_objects["score"]->setPosition({ASSET_SIZE * (BOARD_SIZE + 3), 32});
+    auto properties = std::get<IObject::TextProperties>(this->_objects["score"]->getProperties());
+    properties.color = WHITE;
+    properties.text = "Score: " + std::to_string(_snakeSize);
+    properties.characterSize = 64;
+    this->_objects["score"]->setProperties(properties);
+}
+
+void Snake::updateScore() {
+    auto properties = std::get<IObject::TextProperties>(this->_objects["score"]->getProperties());
+    properties.text = "Score: " + std::to_string(_snakeSize);
+    this->_objects["score"]->setProperties(properties);
 }
 
 void Snake::moveSnake(int input) {
-    if (this->getElapsedTime() < 0.5)
+    if (input != 0)
+        this->_lastInput = input;
+    if (this->getElapsedTime() < 0.2)
         return;
     const auto oldDirection = this->getSnakeOrientation();
     this->startClock();
@@ -31,7 +51,7 @@ void Snake::moveSnake(int input) {
     }
     auto snakePos = this->_objects["snake" + std::to_string(1)]->getPosition();
     Orientation direction;
-    switch (input) {
+    switch (this->_lastInput) {
         case KEY_UP:
             direction = UP;
             break;
@@ -101,25 +121,24 @@ void Snake::checkApples() {
 }
 
 void Snake::addSnakePart() {
-    std::pair<int, int> newPos;
     std::pair<int, int> tailPos = this->_objects["snake" + std::to_string(this->_snakeSize)]->getPosition();
 
     std::vector<std::pair<int, int>> possiblePos;
-    std::vector<bool> valid = {true, true, true, true};
-    possiblePos.emplace_back(tailPos.first - ASSET_SIZE, tailPos.first);
-    possiblePos.emplace_back(tailPos.first + ASSET_SIZE, tailPos.first);
-    possiblePos.emplace_back(tailPos.first, tailPos.first - ASSET_SIZE);
-    possiblePos.emplace_back(tailPos.first, tailPos.first + ASSET_SIZE);
+    std::vector valid = {true, true, true, true};
+    possiblePos.emplace_back(tailPos.first - ASSET_SIZE, tailPos.second);
+    possiblePos.emplace_back(tailPos.first + ASSET_SIZE, tailPos.second);
+    possiblePos.emplace_back(tailPos.first, tailPos.second - ASSET_SIZE);
+    possiblePos.emplace_back(tailPos.first, tailPos.second + ASSET_SIZE);
     for (auto& object : this->_objects) {
         for (int i = 0; i < 4; i++)
             if (object.second->getPosition() == possiblePos[i])
                 valid[i] = false;
     }
     int n = 0;
-    for (; !valid[n]; n++);
-    newPos = possiblePos[n];
-    std::string newName = "snake" + std::to_string(this->_snakeSize + 1);
-    this->_objects[newName] = std::make_unique<Sprite>("./ressources/Snake");
+    for (; !valid[n]; n++) {}
+    const std::pair<int, int> newPos = possiblePos[n];
+    const std::string newName = "snake" + std::to_string(this->_snakeSize + 1);
+    this->_objects[newName] = std::make_unique<Sprite>("Snake/Snake");
     this->_objects[newName]->setPosition(newPos);
     auto properties = std::get<IObject::SpriteProperties>(this->_objects[newName]->getProperties());
     properties.offset = HEAD_RIGHT;
@@ -136,15 +155,24 @@ void Snake::addSnakePart() {
 bool Snake::update(std::pair<int, int> mousePos, int input) {
     (void)mousePos;
     this->moveSnake(input);
-    this->updateSnake();
-    if (this->collideWall())
+    if (this->collideWall()) {
+        this->_objects.clear();
+        this->_snakeSize = 3;
+        this->initSnake();
+        this->initWalls();
+        this->initApples();
+        this->startClock();
+        this->initScore();
         return true;
+    }
     this->checkApples();
+    this->updateSnake();
+    this->updateScore();
     return false;
 }
 
 void Snake::initSnake() {
-    this->_objects["snake1"] = std::make_unique<Sprite>("./ressources/Snake");
+    this->_objects["snake1"] = std::make_unique<Sprite>("Snake/Snake");
     this->_objects["snake1"]->setPosition({ASSET_SIZE * (BOARD_SIZE / 2 + 2), ASSET_SIZE * (BOARD_SIZE / 2  + 1)});
     auto properties = std::get<IObject::SpriteProperties>(this->_objects["snake1"]->getProperties());
     properties.offset = HEAD_RIGHT;
@@ -156,7 +184,7 @@ void Snake::initSnake() {
     properties.textOffset.second /= 4;
     this->_objects["snake1"]->setProperties(properties);
 
-    this->_objects["snake2"] = std::make_unique<Sprite>("./ressources/Snake");
+    this->_objects["snake2"] = std::make_unique<Sprite>("Snake/Snake");
     this->_objects["snake2"]->setPosition({ASSET_SIZE * (BOARD_SIZE / 2 + 1), ASSET_SIZE * (BOARD_SIZE / 2 + 1)});
     properties = std::get<IObject::SpriteProperties>(this->_objects["snake2"]->getProperties());
     properties.offset = BODY_HORIZONTAL;
@@ -168,7 +196,7 @@ void Snake::initSnake() {
     properties.textOffset.second /= 4;
     this->_objects["snake2"]->setProperties(properties);
 
-    this->_objects["snake3"] = std::make_unique<Sprite>("./ressources/Snake");
+    this->_objects["snake3"] = std::make_unique<Sprite>("Snake/Snake");
     this->_objects["snake3"]->setPosition({ASSET_SIZE * (BOARD_SIZE / 2), ASSET_SIZE * (BOARD_SIZE / 2 + 1)});
     properties = std::get<IObject::SpriteProperties>(this->_objects["snake3"]->getProperties());
     properties.offset = TAIL_RIGHT;
@@ -183,7 +211,7 @@ void Snake::initSnake() {
 
 void Snake::createWall(std::pair<int, int> pos, int nb) {
     std::string name = "wall" + std::to_string(nb);
-    this->_objects[name] = std::make_unique<Sprite>("./ressources/Snake");
+    this->_objects[name] = std::make_unique<Sprite>("Snake/Snake");
     this->_objects[name]->setPosition(pos);
     auto properties = std::get<IObject::SpriteProperties>(this->_objects[name]->getProperties());
     properties.offset = WALL;
@@ -214,16 +242,16 @@ void Snake::createApple(int appleNb) {
 
     for (auto& object : this->_objects)
         if (object.first.starts_with("snake") || object.first.starts_with("apple"))
-            physicalObjects.emplace_back((object.second->getPosition().first / ASSET_SIZE) - 1, (object.second->getPosition().second / ASSET_SIZE) - 1);
+            physicalObjects.emplace_back(object.second->getPosition());
     bool foundValidPlacement = false;
     while (!foundValidPlacement) {
-        std::pair<int, int> pos = {this->_distrib(this->_gen), this->_distrib(this->_gen)};
+        std::pair<int, int> pos = {this->_distrib(this->_gen) * ASSET_SIZE, this->_distrib(this->_gen) * ASSET_SIZE};
         auto it = std::find(physicalObjects.begin(), physicalObjects.end(), pos);
         if (it != physicalObjects.end())
             continue;
         foundValidPlacement = true;
-        this->_objects[name] = std::make_unique<Sprite>("./ressources/Snake");
-        this->_objects[name]->setPosition({pos.first * (ASSET_SIZE + 1), pos.second * (ASSET_SIZE + 1)});
+        this->_objects[name] = std::make_unique<Sprite>("Snake/Snake");
+        this->_objects[name]->setPosition(pos);
         auto properties = std::get<IObject::SpriteProperties>(this->_objects[name]->getProperties());
         properties.offset = APPLE;
         properties.size = {ASSET_SIZE, ASSET_SIZE};
