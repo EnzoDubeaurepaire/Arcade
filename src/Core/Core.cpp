@@ -25,7 +25,7 @@ void Arcade::Core::loadFirstLib(const std::string& name) {
         throw CoreException("Libraries not found");
     }
     try {
-        std::unique_ptr<DynamicLibrary> lib = std::make_unique<DynamicLibrary>(name);
+        auto lib = std::make_unique<DynamicLibrary>(name);
         void *sym = lib->getSymbol("createInstanceIDisplay");
         if (!sym) {
             throw CoreException("Could not find symbol in '" + name + "'");
@@ -35,7 +35,7 @@ void Arcade::Core::loadFirstLib(const std::string& name) {
         const std::string str = display->getName();
         this->_displayModules[str] = std::pair(std::move(lib), std::move(display));
         this->loadDisplay(str);
-    } catch (DynamicLibrary::DynamicLibraryException& e) {
+    } catch (DynamicLibrary::DynamicLibraryException&) {
         throw CoreException("Could not load library '" + name + "'");
     }
 }
@@ -66,7 +66,7 @@ void Arcade::Core::getDisplayFallback() {
     this->loadDisplay(this->_displayModules.begin()->first);
 }
 
-void Arcade::Core::getGameFallback() {
+void Arcade::Core::getGameFallback() const {
     if (this->_gameModules.empty()) {
         *this->_loadedGame = "Main Menu";
     } else
@@ -78,9 +78,10 @@ void Arcade::Core::updateLibraries() {
         throw CoreException("Libraries not found");
     }
     for (const auto& entry : std::filesystem::directory_iterator("./lib")) {
-        if (entry.is_regular_file() && entry.path().extension() == ".so") {
+        if (entry.is_regular_file() && entry.path().extension() == ".so" && std::find(this->_libraries.begin(), this->_libraries.end(), entry.path().string()) == this->_libraries.end()) {
             try {
-                std::unique_ptr<DynamicLibrary> lib = std::make_unique<DynamicLibrary>(entry.path().string());
+                this->_libraries.push_back(entry.path().string());
+                auto lib = std::make_unique<DynamicLibrary>(entry.path().string());
                 void *sym = lib->getSymbol("createInstanceIGame");
                 if (sym) {
                     auto *gameCreator = reinterpret_cast<std::unique_ptr<IGameModule>(*)()>(sym);
@@ -103,16 +104,6 @@ void Arcade::Core::updateLibraries() {
             }
         }
     }
-    for (const auto& lib : this->_gameModules)
-        if (!this->isLibLoaded(lib.first))
-            this->_gameModules.erase(lib.first);
-    for (const auto& lib : this->_displayModules)
-        if (!this->isLibLoaded(lib.first))
-            this->_displayModules.erase(lib.first);
-    if (!this->isLibLoaded(*this->_loadedDisplay))
-        this->getDisplayFallback();
-    if (!this->isLibLoaded(*this->_loadedGame))
-        this->getGameFallback();
 }
 
 void Arcade::Core::handleInputs() {
@@ -182,14 +173,14 @@ void Arcade::Core::run() {
     }
 }
 
-void Arcade::Core::loadGame(const std::string &name) {
+void Arcade::Core::loadGame(const std::string &name) const {
     if (this->_gameModules.contains(name)) {
         *this->_loadedGame = name;
     }
 }
 
 void Arcade::Core::unloadGame(const std::string &name) {
-    std::string toWrite = name + " " + dynamic_cast<MainMenu&>(this->getGame("Main Menu")).getPlayerName() + " " + std::to_string(this->getGame(*this->_loadedGame).getScore());
+    const std::string toWrite = name + " " + dynamic_cast<MainMenu&>(this->getGame("Main Menu")).getPlayerName() + " " + std::to_string(this->getGame(*this->_loadedGame).getScore());
     std::ofstream file(".save", std::ios::app);
 
     if (!file.is_open())
@@ -211,7 +202,7 @@ void Arcade::Core::loadDisplay(const std::string &name) {
         }
     }
 
-    if (*this->_loadedDisplay != "") {
+    if (!this->_loadedDisplay->empty()) {
         unloadDisplay(*this->_loadedDisplay);
     }
 

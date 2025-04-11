@@ -41,6 +41,7 @@ namespace Arcade {
 
     private:
         bool _running = true;
+        std::vector<std::string> _libraries;
         std::shared_ptr<std::string> _loadedGame;
         std::shared_ptr<std::string> _loadedDisplay;
         std::map<std::string, std::pair<std::unique_ptr<DynamicLibrary>, std::unique_ptr<IGameModule>>> _gameModules;
@@ -48,12 +49,12 @@ namespace Arcade {
         std::pair<int, int> _mousePos;
         int _input{};
 
-        void loadGame(const std::string& name);
+        void loadGame(const std::string& name) const;
         void unloadGame(const std::string& name);
         void loadDisplay(const std::string& name);
         void unloadDisplay(const std::string& name);
         void getDisplayFallback();
-        void getGameFallback();
+        void getGameFallback() const;
         void handleInputs();
         void goToNextDisplay();
         void goToNextGame();
