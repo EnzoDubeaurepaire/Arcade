@@ -7,7 +7,7 @@
 
 #include "Text.hpp"
 
-Text::Text(const std::string& path) {
+Arcade::Text::Text(const std::string& path) {
     TextProperties textProperties;
 
     textProperties.color = 0;

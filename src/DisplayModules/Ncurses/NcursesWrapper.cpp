@@ -1,13 +1,13 @@
 #include "NcursesWrapper.hpp"
 
-NcursesWrapper::NcursesWrapper() : _window(nullptr), _isInitialized(false) {}
+Arcade::NcursesWrapper::NcursesWrapper() : _window(nullptr), _isInitialized(false) {}
 
-NcursesWrapper::~NcursesWrapper() {
+Arcade::NcursesWrapper::~NcursesWrapper() {
     if (_isInitialized)
         cleanup();
 }
 
-void NcursesWrapper::initialize() {
+void Arcade::NcursesWrapper::initialize() {
     if (_isInitialized)
         return;
 
@@ -26,30 +26,30 @@ void NcursesWrapper::initialize() {
     _isInitialized = true;
 }
 
-void NcursesWrapper::cleanup() {
+void Arcade::NcursesWrapper::cleanup() {
     if (!_isInitialized)
         return;
     endwin();
     _isInitialized = false;
 }
 
-int NcursesWrapper::getKeyInput() {
+int Arcade::NcursesWrapper::getKeyInput() {
     return getch();
 }
 
-void NcursesWrapper::clear() {
+void Arcade::NcursesWrapper::clear() {
     erase();
 }
 
-void NcursesWrapper::refresh() {
+void Arcade::NcursesWrapper::refresh() {
     ::refresh();
 }
 
-void NcursesWrapper::getTerminalSize(int& width, int& height) {
+void Arcade::NcursesWrapper::getTerminalSize(int& width, int& height) {
     getmaxyx(stdscr, height, width);
 }
 
-void NcursesWrapper::drawChar(int y, int x, char c, int colorPair) {
+void Arcade::NcursesWrapper::drawChar(int y, int x, char c, int colorPair) {
     if (colorPair > 0)
         attron(COLOR_PAIR(colorPair));
 
@@ -59,7 +59,7 @@ void NcursesWrapper::drawChar(int y, int x, char c, int colorPair) {
         attroff(COLOR_PAIR(colorPair));
 }
 
-void NcursesWrapper::drawString(int y, int x, const std::string& str, int colorPair) {
+void Arcade::NcursesWrapper::drawString(int y, int x, const std::string& str, int colorPair) {
     if (colorPair > 0)
         attron(COLOR_PAIR(colorPair));
 
@@ -68,15 +68,15 @@ void NcursesWrapper::drawString(int y, int x, const std::string& str, int colorP
         attroff(COLOR_PAIR(colorPair));
 }
 
-bool NcursesWrapper::hasColors() const {
+bool Arcade::NcursesWrapper::hasColors() const {
     return ::has_colors();
 }
 
-void NcursesWrapper::initColor(int pairId, short fg, short bg) {
+void Arcade::NcursesWrapper::initColor(int pairId, short fg, short bg) {
     init_pair(pairId, fg, bg);
 }
 
-void NcursesWrapper::setColor(int pairId, bool on) {
+void Arcade::NcursesWrapper::setColor(int pairId, bool on) {
     if (on)
         attron(COLOR_PAIR(pairId));
     else

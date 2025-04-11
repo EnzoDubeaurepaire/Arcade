@@ -24,42 +24,47 @@
 #include "IObject.hpp"
 
 
-class MainMenu final : public IGameModule {
-public:
-    MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::shared_ptr<std::string>& loadedDisplay);
-    ~MainMenu() override = default;
+namespace Arcade {
+    class MainMenu final : public IGameModule {
+    public:
+        MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::shared_ptr<std::string>& loadedDisplay);
+        ~MainMenu() override = default;
 
-    bool update(std::pair<int, int>pos, int input) override;
-    std::map<std::string, std::unique_ptr<IObject>>& getObjects() override {return _objects;};
-    std::string getName() const override {return "Main Menu";};
-    std::size_t getScore() const override {return 0;};
+        bool update(std::pair<int, int>pos, int input) override;
+        std::map<std::string, std::unique_ptr<IObject>>& getObjects() override {return _objects;};
+        std::string getName() const override {return "Main Menu";};
+        std::size_t getScore() const override {return 0;};
 
-    void updateGames(const std::vector<std::string>& games);
-    void updateDisplay(const std::vector<std::string>& display);
+        void updateGames(const std::vector<std::string>& games);
+        void updateDisplay(const std::vector<std::string>& display);
+
+        std::string getPlayerName() {return _playerName;};
 
 
-private:
-    std::map<std::string, std::unique_ptr<IObject>> _objects;
-    std::string _playerName;
-    std::shared_ptr<std::string> _loadedGame;
-    std::shared_ptr<std::string> _loadedDisplay;
-    std::vector<std::string> _games;
-    int _selectedGame;
-    std::vector<std::string> _display;
-    std::pair<std::size_t, std::size_t> _cursorPos;
-    std::pair<int, int> _selectorPos;
 
-    void removeCharFromPlayer();
-    void addCharToPlayer(char c);
-    void addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, u_int32_t color);
-    void updateDisplayText();
-    void updateGamesText();
-    void moveSelectorLeft();
-    void moveSelectorRight();
-    void moveSelectorUp();
-    void moveSelectorDown();
-    void select();
-    void launch() const;
-};
+    private:
+        std::map<std::string, std::unique_ptr<IObject>> _objects;
+        std::string _playerName;
+        std::shared_ptr<std::string> _loadedGame;
+        std::shared_ptr<std::string> _loadedDisplay;
+        std::vector<std::string> _games;
+        int _selectedGame;
+        std::vector<std::string> _display;
+        std::pair<std::size_t, std::size_t> _cursorPos;
+        std::pair<int, int> _selectorPos;
+
+        void removeCharFromPlayer();
+        void addCharToPlayer(char c);
+        void addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, u_int32_t color);
+        void updateDisplayText();
+        void updateGamesText();
+        void moveSelectorLeft();
+        void moveSelectorRight();
+        void moveSelectorUp();
+        void moveSelectorDown();
+        void select();
+        void launch() const;
+    };
+}
 
 #endif
