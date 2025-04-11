@@ -20,7 +20,7 @@ short Arcade::NcursesModule::getNearestColor(u_int32_t color) {
 }
 
 Arcade::NcursesModule::NcursesModule() : _isOpen(false),
-                                 _gameWidth(800), _gameHeight(600) {}
+                                         _gameWidth(800), _gameHeight(600) {}
 
 Arcade::NcursesModule::~NcursesModule() {
     this->closeWindow();
@@ -53,6 +53,8 @@ int Arcade::NcursesModule::getInput() {
         return K_BACKSPACE;
     case 10:
         return '\n';
+    case ' ':
+        return ' ';
     default:
         if (ch >= 'a' && ch <= 'z')
             return ch;
@@ -104,7 +106,7 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
     for (auto& [key, object] : objects) {
         if (object) {
             std::pair<int, int> pos = object->getPosition();
-            auto [termX, termY] = scaleCoords(pos.first, pos.second);
+            auto [termX, termY] = this->scaleCoords(pos.first, pos.second);
 
             short colorPair = 1;
 
@@ -120,7 +122,7 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
 
                 IObject::SpriteProperties props = std::get<IObject::SpriteProperties>(object->getProperties());
                 if (_ncurses.hasColors()) {
-                    short colorNum = getNearestColor(props.textColor);
+                    short colorNum = this->getNearestColor(props.textColor);
                     switch (colorNum) {
                     case COLOR_RED: colorPair = 2; break;
                     case COLOR_GREEN: colorPair = 3; break;
@@ -139,7 +141,7 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
                 std::string displayText = props.text;
 
                 if (_ncurses.hasColors()) {
-                    short colorNum = getNearestColor(props.color);
+                    short colorNum = this->getNearestColor(props.color);
                     switch (colorNum) {
                     case COLOR_RED: colorPair = 2; break;
                     case COLOR_GREEN: colorPair = 3; break;
@@ -163,7 +165,8 @@ void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IOb
     for (auto& [key, object] : objects) {
         if (object->getType() == SPRITE) {
             char spriteChar = '#';
-            std::string filePath = object->getTexturePath() + "/text.txt";
+            // Modification du chemin pour correspondre au format des autres modules
+            std::string filePath = "./assets/" + object->getTexturePath() + ".txt";
             std::ifstream file(filePath);
             if (file.is_open()) {
                 std::string line;
@@ -171,6 +174,8 @@ void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IOb
                     spriteChar = line[0];
                 }
                 file.close();
+            } else {
+                std::cerr << "Failed to load text file: " << filePath << std::endl;
             }
             auto spritePtr = std::make_shared<char>(spriteChar);
             object->setTexture(std::make_shared<std::string>(object->getTexturePath()));
@@ -190,4 +195,10 @@ void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IOb
             }
         }
     }
+}
+
+extern "C" {
+std::unique_ptr<Arcade::IDisplayModule> createInstanceIDisplay() {
+    return std::make_unique<Arcade::NcursesModule>();
+}
 }

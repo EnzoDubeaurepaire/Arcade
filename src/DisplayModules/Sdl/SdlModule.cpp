@@ -9,22 +9,20 @@
 
 #include <iostream>
 
+Arcade::SdlModule::SdlResource::SdlResource() : texture(nullptr), font(nullptr), fontSize(0) {}
 
-SdlResource::SdlResource() : texture(nullptr), font(nullptr), fontSize(0) {
+Arcade::SdlModule::SdlResource::~SdlResource() {
+    this->cleanup();
 }
 
-SdlResource::~SdlResource() {
-    cleanup();
-}
-
-void SdlResource::cleanup() {
-    if (texture) {
-        SDL_DestroyTexture(texture);
-        texture = nullptr;
+void Arcade::SdlModule::SdlResource::cleanup() {
+    if (this->texture) {
+        SDL_DestroyTexture(this->texture);
+        this->texture = nullptr;
     }
-    if (font) {
-        TTF_CloseFont(font);
-        font = nullptr;
+    if (this->font) {
+        TTF_CloseFont(this->font);
+        this->font = nullptr;
     }
 }
 
@@ -32,7 +30,6 @@ Arcade::SdlModule::SdlModule() = default;
 
 Arcade::SdlModule::~SdlModule() {
     _resources.clear();
-
     closeWindow();
 }
 
@@ -58,6 +55,8 @@ int Arcade::SdlModule::getInput() {
                 return K_BACKSPACE;
             if (event.key.keysym.sym == SDLK_RETURN)
                 return '\n';
+            if (event.key.keysym.sym == SDLK_SPACE)
+                return ' ';
         }
     }
     return 0;
@@ -67,101 +66,82 @@ void Arcade::SdlModule::openWindow() {
     if (_isInitialized)
         return;
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+    if (!_sdlWrapper.initSDL())
+        return;
+    if (!_sdlWrapper.initTTF()) {
+        _sdlWrapper.cleanup();
         return;
     }
-    if (TTF_Init() < 0) {
-        std::cerr << "SDL_ttf could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
-        SDL_Quit();
+    if (!_sdlWrapper.initIMG()) {
+        _sdlWrapper.cleanup();
         return;
     }
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        std::cerr << "SDL_image could not initialize! IMG_Error: " << IMG_GetError() << std::endl;
-        TTF_Quit();
-        SDL_Quit();
+    if (!_sdlWrapper.createWindow("SDL2 Window", 1920, 1080)) {
+        _sdlWrapper.cleanup();
         return;
     }
-    _window = SDL_CreateWindow("SDL2 Window",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        1920, 1080,
-        SDL_WINDOW_SHOWN);
-    if (!_window) {
-        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        IMG_Quit();
-        TTF_Quit();
-        SDL_Quit();
-        return;
-    }
-    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
-    if (!_renderer) {
-        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(_window);
-        IMG_Quit();
-        TTF_Quit();
-        SDL_Quit();
+    if (!_sdlWrapper.createRenderer()) {
+        _sdlWrapper.cleanup();
         return;
     }
     _isInitialized = true;
 }
 
 void Arcade::SdlModule::closeWindow() {
-    if (!_isInitialized) return;
+    if (!_isInitialized)
+        return;
 
-    if (_renderer) {
-        SDL_DestroyRenderer(_renderer);
-        _renderer = nullptr;
-    }
-    if (_window) {
-        SDL_DestroyWindow(_window);
-        _window = nullptr;
-    }
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
+    _sdlWrapper.cleanup();
     _isInitialized = false;
 }
 
-void Arcade::SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects) {
-    if (!_isInitialized || !_renderer) return;
+void Arcade::SdlModule::display(std::map<std::string, std::unique_ptr<Arcade::IObject>>& objects) {
+    if (!_isInitialized || !_sdlWrapper.getRenderer())
+        return;
 
-    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
-    SDL_RenderClear(_renderer);
+    _sdlWrapper.setDrawColor(0, 0, 0, 255);
+    _sdlWrapper.clearRenderer();
+
     for (auto& object : objects) {
         try {
             std::string key;
             try {
                 key = any_cast<std::string>(object.second->getSprite());
-            } catch (const std::bad_any_cast& e) {
+            } catch (const std::bad_any_cast&) {
                 continue;
             }
+
             auto it = _resources.find(key);
-            if (it == _resources.end() || !it->second) continue;
+            if (it == _resources.end() || !it->second)
+                continue;
             auto& resource = it->second;
+
             if (object.second->getType() == SPRITE && resource->texture) {
                 SDL_Rect srcRect;
-                IObject::SpriteProperties props = std::get<IObject::SpriteProperties>(object.second->getProperties());
+                Arcade::IObject::SpriteProperties props = std::get<Arcade::IObject::SpriteProperties>(object.second->getProperties());
                 srcRect.x = props.offset.first;
                 srcRect.y = props.offset.second;
                 srcRect.w = props.size.first;
                 srcRect.h = props.size.second;
+
                 SDL_Rect dstRect;
                 dstRect.x = object.second->getPosition().first;
                 dstRect.y = object.second->getPosition().second;
                 dstRect.w = props.size.first;
                 dstRect.h = props.size.second;
 
-                SDL_RenderCopy(_renderer, resource->texture, &srcRect, &dstRect);
+                SDL_RenderCopy(_sdlWrapper.getRenderer(), resource->texture, &srcRect, &dstRect);
             }
+
             if (object.second->getType() == TEXT && resource->font) {
-                IObject::TextProperties props = std::get<IObject::TextProperties>(object.second->getProperties());
+                Arcade::IObject::TextProperties props = std::get<Arcade::IObject::TextProperties>(object.second->getProperties());
                 SDL_Color textColor = {
                     static_cast<Uint8>(GET_RED(props.color)),
                     static_cast<Uint8>(GET_GREEN(props.color)),
                     static_cast<Uint8>(GET_BLUE(props.color)),
                     static_cast<Uint8>(GET_ALPHA(props.color))
                 };
+
                 if (resource->text != props.text || (long unsigned int)resource->fontSize != props.characterSize) {
                     resource->text = props.text;
                     resource->fontSize = props.characterSize;
@@ -173,11 +153,12 @@ void Arcade::SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>&
                     if (!props.text.empty()) {
                         SDL_Surface* textSurface = TTF_RenderText_Solid(resource->font, props.text.c_str(), textColor);
                         if (textSurface) {
-                            resource->texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
+                            resource->texture = _sdlWrapper.createTextureFromSurface(textSurface);
                             SDL_FreeSurface(textSurface);
                         }
                     }
                 }
+
                 if (resource->texture) {
                     int width, height;
                     SDL_QueryTexture(resource->texture, NULL, NULL, &width, &height);
@@ -188,32 +169,36 @@ void Arcade::SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>&
                     dstRect.w = width;
                     dstRect.h = height;
 
-                    SDL_RenderCopy(_renderer, resource->texture, NULL, &dstRect);
+                    SDL_RenderCopy(_sdlWrapper.getRenderer(), resource->texture, NULL, &dstRect);
                 }
             }
         } catch (const std::exception& e) {
             std::cerr << "Error during display: " << e.what() << std::endl;
         }
     }
-    SDL_RenderPresent(_renderer);
+
+    _sdlWrapper.presentRenderer();
 }
 
-void Arcade::SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
-    if (!_isInitialized) {
+void Arcade::SdlModule::initObject(std::map<std::string, std::unique_ptr<Arcade::IObject>>& objects) {
+    if (!_isInitialized)
         openWindow();
-    }
-    if (!_isInitialized || !_renderer) {
+
+    if (!_isInitialized || !_sdlWrapper.getRenderer()) {
         std::cerr << "SDL not initialized in initObject!" << std::endl;
         return;
     }
+
     for (auto& object : objects) {
         auto resource = std::make_unique<SdlResource>();
         std::string key = object.first;
+
         if (object.second->getType() == SPRITE) {
-            std::string path = object.second->getTexturePath() + "/graphical.png";
+            // Modification du chemin pour correspondre au format SFML
+            std::string path = "./assets/" + object.second->getTexturePath() + ".png";
             SDL_Surface* surface = IMG_Load(path.c_str());
             if (surface) {
-                resource->texture = SDL_CreateTextureFromSurface(_renderer, surface);
+                resource->texture = _sdlWrapper.createTextureFromSurface(surface);
                 SDL_FreeSurface(surface);
 
                 if (!resource->texture) {
@@ -223,9 +208,11 @@ void Arcade::SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject
                 std::cerr << "Failed to load image: " << path << " - " << IMG_GetError() << std::endl;
             }
         }
+
         if (object.second->getType() == TEXT) {
-            IObject::TextProperties props = std::get<IObject::TextProperties>(object.second->getProperties());
-            std::string fontPath = object.second->getTexturePath() + "/font.ttf";
+            Arcade::IObject::TextProperties props = std::get<Arcade::IObject::TextProperties>(object.second->getProperties());
+            // Modification du chemin pour correspondre au format SFML
+            std::string fontPath = "./assets/" + object.second->getTexturePath() + ".ttf";
             resource->font = TTF_OpenFont(fontPath.c_str(), props.characterSize);
             if (resource->font) {
                 resource->fontSize = props.characterSize;
@@ -240,7 +227,7 @@ void Arcade::SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject
                     };
                     SDL_Surface* textSurface = TTF_RenderText_Solid(resource->font, props.text.c_str(), textColor);
                     if (textSurface) {
-                        resource->texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
+                        resource->texture = _sdlWrapper.createTextureFromSurface(textSurface);
                         SDL_FreeSurface(textSurface);
                     }
                 }
@@ -248,8 +235,15 @@ void Arcade::SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject
                 std::cerr << "Failed to load font: " << fontPath << std::endl;
             }
         }
+
         _resources[key] = std::move(resource);
         object.second->setSprite(key);
         object.second->setTexture(key);
     }
+}
+
+extern "C" {
+std::unique_ptr<Arcade::IDisplayModule> createInstanceIDisplay() {
+    return std::make_unique<Arcade::SdlModule>();
+}
 }

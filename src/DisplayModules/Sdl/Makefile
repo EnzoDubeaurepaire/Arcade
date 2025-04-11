@@ -8,6 +8,7 @@
 NAME	=	../../../lib/arcade_sdl2.so
 
 SRC	=	SdlModule.cpp \
+		SdlWrapper.cpp \
 
 OBJ	=	$(SRC:.cpp=.o)
 

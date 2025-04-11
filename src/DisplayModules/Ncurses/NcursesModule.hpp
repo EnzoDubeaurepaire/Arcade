@@ -36,10 +36,4 @@ namespace Arcade {
     };
 }
 
-extern "C" {
-std::unique_ptr<Arcade::IDisplayModule> createInstanceIDisplay() {
-    return std::make_unique<Arcade::NcursesModule>();
-}
-}
-
 #endif
