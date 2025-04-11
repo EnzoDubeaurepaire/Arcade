@@ -190,6 +190,8 @@ void Arcade::SdlModule::initObject(std::map<std::string, std::unique_ptr<Arcade:
     }
 
     for (auto& object : objects) {
+        if (std::string(object.second->getSprite().type().name()) == "NSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE")
+            continue;
         auto resource = std::make_unique<SdlResource>();
         std::string key = object.first;
 

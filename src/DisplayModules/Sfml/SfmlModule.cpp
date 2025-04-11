@@ -52,8 +52,6 @@ void Arcade::SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>
     for (auto& object : objects) {
         if (object.second->getType() == SPRITE) {
             auto sprite(any_cast<std::shared_ptr<sf::Sprite>>(object.second->getSprite()));
-            auto texture(any_cast<std::shared_ptr<sf::Texture>>(object.second->getTexture()));
-            sprite->setTexture(*texture);
             sprite->setPosition(static_cast<float>(object.second->getPosition().first), static_cast<float>(object.second->getPosition().second));
             IObject::Properties spriteProperties = object.second->getProperties();
             const sf::IntRect rect(std::get<IObject::SpriteProperties>(object.second->getProperties()).offset.first,
@@ -65,9 +63,7 @@ void Arcade::SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>
         }
         if (object.second->getType() == TEXT) {
             auto text(any_cast<std::shared_ptr<sf::Text>>(object.second->getSprite()));
-            auto font(any_cast<std::shared_ptr<sf::Font>>(object.second->getTexture()));
             text->setPosition(static_cast<float>(object.second->getPosition().first), static_cast<float>(object.second->getPosition().second));
-            text->setFont(*font);
             text->setString(std::get<IObject::TextProperties>(object.second->getProperties()).text);
             u_int32_t color = std::get<IObject::TextProperties>(object.second->getProperties()).color;
             text->setFillColor(sf::Color(GET_RED(color), GET_GREEN(color), GET_BLUE(color), GET_ALPHA(color)));
@@ -80,6 +76,8 @@ void Arcade::SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>
 
 void Arcade::SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     for (auto& object : objects) {
+        if (std::string(object.second->getSprite().type().name()) == "St10shared_ptrIN2sf6SpriteEE" || std::string(object.second->getSprite().type().name()) == "St10shared_ptrIN2sf4TextEE")
+            continue;
         if (object.second->getType() == SPRITE) {
             auto texture = std::make_shared<sf::Texture>();
             texture->loadFromFile("./assets/" + object.second->getTexturePath() + ".png");

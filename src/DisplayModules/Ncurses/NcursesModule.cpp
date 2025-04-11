@@ -163,6 +163,8 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
 
 void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     for (auto& [key, object] : objects) {
+        if (std::string(object->getSprite().type().name()) == "St10shared_ptrIcE" || std::string(object->getSprite().type().name()) == "St10shared_ptrINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE")
+            continue;
         if (object->getType() == SPRITE) {
             char spriteChar = '#';
             // Modification du chemin pour correspondre au format des autres modules
