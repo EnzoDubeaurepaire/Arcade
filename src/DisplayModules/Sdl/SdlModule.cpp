@@ -10,30 +10,29 @@
 #include <iostream>
 
 
-SdlResource::SdlResource() : texture(nullptr), font(nullptr), fontSize(0) {
+SdlModule::SdlResource::SdlResource() : texture(nullptr), font(nullptr), fontSize(0) {
 }
 
-SdlResource::~SdlResource() {
-    cleanup();
+SdlModule::SdlResource::~SdlResource() {
+    this->cleanup();
 }
 
-void SdlResource::cleanup() {
-    if (texture) {
-        SDL_DestroyTexture(texture);
-        texture = nullptr;
+void SdlModule::SdlResource::cleanup() {
+    if (this->texture) {
+        SDL_DestroyTexture(this->texture);
+        this->texture = nullptr;
     }
-    if (font) {
-        TTF_CloseFont(font);
-        font = nullptr;
+    if (this->font) {
+        TTF_CloseFont(this->font);
+        this->font = nullptr;
     }
 }
 
 SdlModule::SdlModule() = default;
 
 SdlModule::~SdlModule() {
-    _resources.clear();
-
-    closeWindow();
+    this->_resources.clear();
+    this->closeWindow();
 }
 
 int SdlModule::getInput() {
@@ -64,70 +63,43 @@ int SdlModule::getInput() {
 }
 
 void SdlModule::openWindow() {
-    if (_isInitialized)
+    if (this->_isInitialized)
         return;
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+    if (!this->_sdlWrapper.initSDL())
+        return;
+    if (!this->_sdlWrapper.initTTF()) {
+        this->_sdlWrapper.cleanup();
         return;
     }
-    if (TTF_Init() < 0) {
-        std::cerr << "SDL_ttf could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
-        SDL_Quit();
+    if (!this->_sdlWrapper.initIMG()) {
+        this->_sdlWrapper.cleanup();
         return;
     }
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        std::cerr << "SDL_image could not initialize! IMG_Error: " << IMG_GetError() << std::endl;
-        TTF_Quit();
-        SDL_Quit();
+    if (!this->_sdlWrapper.createWindow("SDL2 Window", 1920, 1080)) {
+        this->_sdlWrapper.cleanup();
         return;
     }
-    _window = SDL_CreateWindow("SDL2 Window",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        1920, 1080,
-        SDL_WINDOW_SHOWN);
-    if (!_window) {
-        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        IMG_Quit();
-        TTF_Quit();
-        SDL_Quit();
+    if (!this->_sdlWrapper.createRenderer()) {
+        this->_sdlWrapper.cleanup();
         return;
     }
-    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
-    if (!_renderer) {
-        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(_window);
-        IMG_Quit();
-        TTF_Quit();
-        SDL_Quit();
-        return;
-    }
-    _isInitialized = true;
+    this->_isInitialized = true;
 }
 
 void SdlModule::closeWindow() {
-    if (!_isInitialized) return;
+    if (!this->_isInitialized) return;
 
-    if (_renderer) {
-        SDL_DestroyRenderer(_renderer);
-        _renderer = nullptr;
-    }
-    if (_window) {
-        SDL_DestroyWindow(_window);
-        _window = nullptr;
-    }
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
-    _isInitialized = false;
+    this->_sdlWrapper.cleanup();
+    this->_isInitialized = false;
 }
 
 void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects) {
-    if (!_isInitialized || !_renderer) return;
+    if (!this->_isInitialized || !this->_sdlWrapper.getRenderer()) return;
 
-    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
-    SDL_RenderClear(_renderer);
+    this->_sdlWrapper.setDrawColor(0, 0, 0, 255);
+    this->_sdlWrapper.clearRenderer();
+
     for (auto& object : objects) {
         try {
             std::string key;
@@ -136,8 +108,8 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
             } catch (const std::bad_any_cast& e) {
                 continue;
             }
-            auto it = _resources.find(key);
-            if (it == _resources.end() || !it->second) continue;
+            auto it = this->_resources.find(key);
+            if (it == this->_resources.end() || !it->second) continue;
             auto& resource = it->second;
             if (object.second->getType() == SPRITE && resource->texture) {
                 SDL_Rect srcRect;
@@ -152,7 +124,7 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
                 dstRect.w = props.size.first;
                 dstRect.h = props.size.second;
 
-                SDL_RenderCopy(_renderer, resource->texture, &srcRect, &dstRect);
+                SDL_RenderCopy(this->_sdlWrapper.getRenderer(), resource->texture, &srcRect, &dstRect);
             }
             if (object.second->getType() == TEXT && resource->font) {
                 IObject::TextProperties props = std::get<IObject::TextProperties>(object.second->getProperties());
@@ -173,7 +145,7 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
                     if (!props.text.empty()) {
                         SDL_Surface* textSurface = TTF_RenderText_Solid(resource->font, props.text.c_str(), textColor);
                         if (textSurface) {
-                            resource->texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
+                            resource->texture = this->_sdlWrapper.createTextureFromSurface(textSurface);
                             SDL_FreeSurface(textSurface);
                         }
                     }
@@ -188,21 +160,21 @@ void SdlModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects
                     dstRect.w = width;
                     dstRect.h = height;
 
-                    SDL_RenderCopy(_renderer, resource->texture, NULL, &dstRect);
+                    SDL_RenderCopy(this->_sdlWrapper.getRenderer(), resource->texture, NULL, &dstRect);
                 }
             }
         } catch (const std::exception& e) {
             std::cerr << "Error during display: " << e.what() << std::endl;
         }
     }
-    SDL_RenderPresent(_renderer);
+    this->_sdlWrapper.presentRenderer();
 }
 
 void SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
-    if (!_isInitialized) {
-        openWindow();
+    if (!this->_isInitialized) {
+        this->openWindow();
     }
-    if (!_isInitialized || !_renderer) {
+    if (!this->_isInitialized || !this->_sdlWrapper.getRenderer()) {
         std::cerr << "SDL not initialized in initObject!" << std::endl;
         return;
     }
@@ -213,7 +185,7 @@ void SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obje
             std::string path = object.second->getTexturePath() + "/graphical.png";
             SDL_Surface* surface = IMG_Load(path.c_str());
             if (surface) {
-                resource->texture = SDL_CreateTextureFromSurface(_renderer, surface);
+                resource->texture = this->_sdlWrapper.createTextureFromSurface(surface);
                 SDL_FreeSurface(surface);
 
                 if (!resource->texture) {
@@ -240,7 +212,7 @@ void SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obje
                     };
                     SDL_Surface* textSurface = TTF_RenderText_Solid(resource->font, props.text.c_str(), textColor);
                     if (textSurface) {
-                        resource->texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
+                        resource->texture = this->_sdlWrapper.createTextureFromSurface(textSurface);
                         SDL_FreeSurface(textSurface);
                     }
                 }
@@ -248,7 +220,7 @@ void SdlModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& obje
                 std::cerr << "Failed to load font: " << fontPath << std::endl;
             }
         }
-        _resources[key] = std::move(resource);
+        this->_resources[key] = std::move(resource);
         object.second->setSprite(key);
         object.second->setTexture(key);
     }

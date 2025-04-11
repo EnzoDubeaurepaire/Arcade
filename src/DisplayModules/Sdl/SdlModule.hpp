@@ -12,26 +12,13 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include "KeyCodes.hpp"
+#include "SdlWrapper.hpp"
 
 #include "IDisplayModule.hpp"
 #include <memory>
 #include <map>
 #include <string>
 #include <utility>
-
-// Structure de données pour stocker les ressources SDL
-struct SdlResource {
-    SDL_Texture* texture;
-    TTF_Font* font;
-    std::string text;
-    int fontSize;
-
-    // Constructeur et fonctions membres sont déclarées ici
-    SdlResource();
-    ~SdlResource();
-
-    void cleanup();
-};
 
 class SdlModule final : public IDisplayModule {
 public:
@@ -51,11 +38,22 @@ public:
     void display(std::map<std::string, std::unique_ptr<IObject>>&) override;
 
 private:
-    bool _isInitialized = false;
-    SDL_Window* _window = nullptr;
-    SDL_Renderer* _renderer = nullptr;
+    class SdlResource {
+    public:
+        SDL_Texture* texture;
+        TTF_Font* font;
+        std::string text;
+        int fontSize;
 
-    // Stockage des ressources pour une libération contrôlée
+        SdlResource();
+        ~SdlResource();
+
+        void cleanup();
+    };
+
+    SdlWrapper _sdlWrapper;
+    bool _isInitialized = false;
+
     std::map<std::string, std::unique_ptr<SdlResource>> _resources;
 };
 
