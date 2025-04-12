@@ -28,7 +28,7 @@ void Arcade::Core::loadFirstLib(const std::string& name) {
         auto lib = std::make_unique<DynamicLibrary>(name);
         void *sym = lib->getSymbol("createInstanceIDisplay");
         if (!sym) {
-            throw CoreException("Could not find symbol in '" + name + "'");
+            throw CoreException("'" + name + "' not a graphical library");
         }
         auto *displayCreator = reinterpret_cast<std::unique_ptr<IDisplayModule>(*)()>(sym);
         auto display = displayCreator();

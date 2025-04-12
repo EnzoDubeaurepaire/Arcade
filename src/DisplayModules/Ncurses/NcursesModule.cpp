@@ -21,7 +21,7 @@ short Arcade::NcursesModule::getNearestColor(u_int32_t color) {
 }
 
 Arcade::NcursesModule::NcursesModule() : _isOpen(false),
-                                         _gameWidth(800), _gameHeight(600) {}
+                                         _gameWidth(1920), _gameHeight(1080) {}
 
 Arcade::NcursesModule::~NcursesModule() {
     this->closeWindow();
@@ -114,10 +114,14 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
             if (object->getType() == SPRITE) {
                 auto texture = any_cast<std::shared_ptr<std::vector<std::string>>>(object->getTexture());
                 std::vector<std::string> sprite;
-                IObject::SpriteProperties props = std::get<IObject::SpriteProperties>(object->getProperties());
-                for (int i = 0; i < props.textSize.second; i++)
-                    for (int j = 0; i < props.textSize.first; j++)
-                        sprite[i][j] = (*texture)[i + props.textOffset.second][j + props.textOffset.first];
+                const auto props = std::get<IObject::SpriteProperties>(object->getProperties());
+
+                if (static_cast<int>(texture->size()) < props.textOffset.second + props.textSize.second)
+                    return;
+                sprite.resize(props.textSize.second);
+                for (int i = 0; i < props.textSize.second; i++) {
+                    sprite[i] = (*texture)[i + props.textOffset.second].substr(props.textOffset.first, props.textSize.first);
+                }
                 if (_ncurses.hasColors()) {
                     short colorNum = this->getNearestColor(props.textColor);
                     switch (colorNum) {
@@ -130,8 +134,8 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
                     default: colorPair = 1; break;
                     }
                 }
-                for (auto line : sprite)
-                    this->_ncurses.drawString(termY, termX, sprite, colorPair);
+                for (const auto& line : sprite)
+                    this->_ncurses.drawString(termY, termX, line, colorPair);
             }
             else if (object->getType() == TEXT) {
                 IObject::TextProperties props = std::get<IObject::TextProperties>(object->getProperties());
@@ -166,8 +170,9 @@ void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IOb
             std::ifstream file(filePath);
             if (file.is_open()) {
                 std::string line;
-                while (std::getline(file, line))
+                while (std::getline(file, line)) {
                     texture->push_back(line);
+                }
                 file.close();
             } else {
                 std::cerr << "Failed to load text file: " << filePath << std::endl;

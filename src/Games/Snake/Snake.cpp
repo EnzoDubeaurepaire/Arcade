@@ -92,8 +92,8 @@ void Arcade::Snake::updateSnake() {
         auto properties = std::get<IObject::SpriteProperties>(this->_objects["snake" + std::to_string(i)]->getProperties());
         properties.offset = this->getSnakePartType(i);
         properties.textOffset = properties.offset;
-        properties.textOffset.first /= 4;
-        properties.textOffset.second /= 4;
+        properties.textOffset.first /= 64;
+        properties.textOffset.second /= 64;
         this->_objects["snake" + std::to_string(i)]->setProperties(properties);
     }
 }
@@ -148,10 +148,10 @@ bool Arcade::Snake::addSnakePart() {
     properties.offset = HEAD_RIGHT;
     properties.size = {ASSET_SIZE, ASSET_SIZE};
     properties.textColor = COLOR(255, 0, 255, 0);
-    properties.textSize = {ASSET_SIZE / 4, ASSET_SIZE / 4};
+    properties.textSize = {ASSET_SIZE / 64, ASSET_SIZE / 64};
     properties.textOffset = HEAD_RIGHT;
-    properties.textOffset.first /= 4;
-    properties.textOffset.second /= 4;
+    properties.textOffset.first /= 64;
+    properties.textOffset.second /= 64;
     this->_objects[newName]->setProperties(properties);
     this->_snakeSize++;
     return false;
@@ -196,10 +196,10 @@ void Arcade::Snake::initSnake() {
     properties.offset = HEAD_RIGHT;
     properties.size = {ASSET_SIZE, ASSET_SIZE};
     properties.textColor = COLOR(255, 0, 255, 0);
-    properties.textSize = {ASSET_SIZE / 4, ASSET_SIZE / 4};
+    properties.textSize = {ASSET_SIZE / 64, ASSET_SIZE / 64};
     properties.textOffset = HEAD_RIGHT;
-    properties.textOffset.first /= 4;
-    properties.textOffset.second /= 4;
+    properties.textOffset.first /= 64;
+    properties.textOffset.second /= 64;
     this->_objects["snake1"]->setProperties(properties);
 
     this->addSnakePart();
@@ -215,10 +215,10 @@ void Arcade::Snake::createWall(std::pair<int, int> pos, int nb) {
     properties.offset = WALL;
     properties.size = {ASSET_SIZE, ASSET_SIZE};
     properties.textColor = COLOR(255, 0, 0, 255);
-    properties.textSize = {ASSET_SIZE / 4, ASSET_SIZE / 4};
+    properties.textSize = {ASSET_SIZE / 64, ASSET_SIZE / 64};
     properties.textOffset = WALL;
-    properties.textOffset.first /= 4;
-    properties.textOffset.second /= 4;
+    properties.textOffset.first /= 64;
+    properties.textOffset.second /= 64;
     this->_objects[name]->setProperties(properties);
 }
 
@@ -254,10 +254,10 @@ void Arcade::Snake::createApple(int appleNb) {
         properties.offset = APPLE;
         properties.size = {ASSET_SIZE, ASSET_SIZE};
         properties.textColor = COLOR(255, 255, 0, 0);
-        properties.textSize = {ASSET_SIZE / 4, ASSET_SIZE / 4};
+        properties.textSize = {ASSET_SIZE / 64, ASSET_SIZE / 64};
         properties.textOffset = APPLE;
-        properties.textOffset.first /= 4;
-        properties.textOffset.second /= 4;
+        properties.textOffset.first /= 64;
+        properties.textOffset.second /= 64;
         this->_objects[name]->setProperties(properties);
     }
 }
