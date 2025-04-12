@@ -205,29 +205,6 @@ void Arcade::Snake::initSnake() {
     this->addSnakePart();
     this->addSnakePart();
     this->addSnakePart();
-//    this->_objects["snake2"] = std::make_unique<Sprite>("Snake/Snake");
-//    this->_objects["snake2"]->setPosition({ASSET_SIZE * (BOARD_SIZE / 2 + 1), ASSET_SIZE * (BOARD_SIZE / 2 + 1)});
-//    properties = std::get<IObject::SpriteProperties>(this->_objects["snake2"]->getProperties());
-//    properties.offset = BODY_HORIZONTAL;
-//    properties.size = {ASSET_SIZE, ASSET_SIZE};
-//    properties.textColor = COLOR(255, 0, 255, 0);
-//    properties.textSize = {ASSET_SIZE / 4, ASSET_SIZE / 4};
-//    properties.textOffset = BODY_HORIZONTAL;
-//    properties.textOffset.first /= 4;
-//    properties.textOffset.second /= 4;
-//    this->_objects["snake2"]->setProperties(properties);
-
-//    this->_objects["snake3"] = std::make_unique<Sprite>("Snake/Snake");
-//    this->_objects["snake3"]->setPosition({ASSET_SIZE * (BOARD_SIZE / 2), ASSET_SIZE * (BOARD_SIZE / 2 + 1)});
-//    properties = std::get<IObject::SpriteProperties>(this->_objects["snake3"]->getProperties());
-//    properties.offset = TAIL_RIGHT;
-//    properties.size = {ASSET_SIZE, ASSET_SIZE};
-//    properties.textColor = COLOR(255, 0, 255, 0);
-//    properties.textSize = {ASSET_SIZE / 4, ASSET_SIZE / 4};
-//    properties.textOffset = TAIL_RIGHT;
-//    properties.textOffset.first /= 4;
-//    properties.textOffset.second /= 4;
-//    this->_objects["snake3"]->setProperties(properties);
 }
 
 void Arcade::Snake::createWall(std::pair<int, int> pos, int nb) {
