@@ -7,6 +7,8 @@
 
 #include "Text.hpp"
 
+#include <iostream>
+
 Arcade::Text::Text(const std::string& path) {
     TextProperties textProperties;
 

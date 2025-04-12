@@ -183,9 +183,9 @@ void Arcade::Core::loadDisplay(const std::string &name) {
         }
     }
 
-    if (!this->_loadedDisplay->empty()) {
-        unloadDisplay(*this->_loadedDisplay);
-    }
+//    if (!this->_loadedDisplay->empty()) {
+//        unloadDisplay(*this->_loadedDisplay);
+//    }
 
     *this->_loadedDisplay = name;
     this->getDisplay(name).initObject(this->getGame(*this->_loadedGame).getObjects());
