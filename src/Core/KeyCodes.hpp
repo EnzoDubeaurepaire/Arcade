@@ -89,7 +89,7 @@
 #define K_ALT        349 /* Alt K */
 
 // Helper macros
-#define CTRL(key)     ((key) & 0x1F) /* CTRL + key */
+#define CTRL(key)     ((key) - 64) /* CTRL + key */
 #define ALT(key)      ((key) | 0x80) /* ALT + key */
 
 #endif /* KEYCODES_H_ */

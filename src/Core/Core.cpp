@@ -199,7 +199,9 @@ void Arcade::Core::unloadDisplay(const std::string &name) {
 }
 
 void Arcade::Core::goToNextGame() {
-    if (this->_gameModules.size() <= 2)
+    if (this->_gameModules.size() < 2)
+        return;
+    if (*this->_loadedGame == "Main Menu")
         return;
     auto it = this->_gameModules.begin();
     for (; it != this->_gameModules.end(); ++it) {
@@ -224,7 +226,7 @@ void Arcade::Core::goToNextDisplay() {
     auto it = this->_displayModules.begin();
     for (; it != this->_displayModules.end(); ++it) {
         if (it->first == *this->_loadedDisplay)
-            return;
+            break;
     }
     ++it;
     if (it == this->_displayModules.end())
