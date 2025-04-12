@@ -7,13 +7,19 @@
 
 #ifndef TEXT_H
 #define TEXT_H
+#include <iostream>
+#include <ostream>
+
 #include "IObject.hpp"
 
 namespace Arcade {
     class Text final : public IObject {
     public:
         Text(const std::string& path);
-        ~Text() override = default;
+        ~Text() override {
+            _font = nullptr;
+            _sprite = nullptr;
+        };
 
         std::pair<int, int> getPosition() const override {return _pos;};
         std::any &getSprite() override {return _sprite;};

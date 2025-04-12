@@ -14,7 +14,10 @@ namespace Arcade {
     class Sprite final : public IObject {
     public:
         Sprite(const std::string& path);
-        ~Sprite() override = default;
+        ~Sprite() override {
+            _sprite = nullptr;
+            _texture = nullptr;
+        };
 
         std::string getType() const override {return SPRITE;};
         std::pair<int, int> getPosition() const override {return this->_position;};

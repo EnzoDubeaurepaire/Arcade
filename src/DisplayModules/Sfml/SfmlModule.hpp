@@ -35,6 +35,10 @@ namespace Arcade {
 
     private:
         std::unique_ptr<sf::RenderWindow> _window;
+        std::vector<std::shared_ptr<sf::Sprite>> _spriteList;
+        std::vector<std::shared_ptr<sf::Texture>> _textureList;
+        std::vector<std::shared_ptr<sf::Font>> _fontList;
+        std::vector<std::shared_ptr<sf::Text>> _textList;
     };
 }
 

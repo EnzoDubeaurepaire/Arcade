@@ -30,7 +30,7 @@ Arcade::SdlModule::SdlModule() = default;
 
 Arcade::SdlModule::~SdlModule() {
     _resources.clear();
-    closeWindow();
+//    closeWindow();
 }
 
 int Arcade::SdlModule::getInput() {
