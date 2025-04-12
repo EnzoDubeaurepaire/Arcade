@@ -162,8 +162,8 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
 
 void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     for (auto& [key, object] : objects) {
-//        if (std::string(object->getSprite().type().name()) == "St10shared_ptrIcE" || std::string(object->getSprite().type().name()) == "St10shared_ptrINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE")
-//            continue;
+        if (std::string(object->getSprite().type().name()) == "St10shared_ptrINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE" || std::string(object->getTexture().type().name()) == "St10shared_ptrISt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS6_EEE")
+            continue;
         if (object->getType() == SPRITE) {
             auto texture = std::make_shared<std::vector<std::string>>();
             std::string filePath = "./assets/" + object->getTexturePath() + ".txt";
@@ -177,11 +177,13 @@ void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IOb
             } else {
                 std::cerr << "Failed to load text file: " << filePath << std::endl;
             }
+            object->setSprite(std::any{});
             object->setTexture(texture);
         }
         else if (object->getType() == TEXT) {
             auto textStr = std::make_shared<std::string>("");
             object->setSprite(textStr);
+            object->setTexture(std::any{});
             auto props = std::get<IObject::TextProperties>(object->getProperties());
 
             if (props.text.empty() && key != "selector") {
