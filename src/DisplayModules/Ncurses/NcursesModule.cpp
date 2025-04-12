@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <vector>
 
 short Arcade::NcursesModule::getNearestColor(u_int32_t color) {
     unsigned char r = GET_RED(color);
@@ -20,7 +21,7 @@ short Arcade::NcursesModule::getNearestColor(u_int32_t color) {
 }
 
 Arcade::NcursesModule::NcursesModule() : _isOpen(false),
-                                         _gameWidth(800), _gameHeight(600) {}
+                                         _gameWidth(1920), _gameHeight(1080) {}
 
 Arcade::NcursesModule::~NcursesModule() {
     this->closeWindow();
@@ -111,16 +112,16 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
             short colorPair = 1;
 
             if (object->getType() == SPRITE) {
-                char displayChar = '#';
-                auto spriteValue = object->getSprite();
-                if (spriteValue.has_value()) {
-                    auto spritePtr = any_cast<std::shared_ptr<char>>(spriteValue);
-                    if (spritePtr) {
-                        displayChar = *spritePtr;
-                    }
-                }
+                auto texture = any_cast<std::shared_ptr<std::vector<std::string>>>(object->getTexture());
+                std::vector<std::string> sprite;
+                const auto props = std::get<IObject::SpriteProperties>(object->getProperties());
 
-                IObject::SpriteProperties props = std::get<IObject::SpriteProperties>(object->getProperties());
+                if (static_cast<int>(texture->size()) < props.textOffset.second + props.textSize.second)
+                    return;
+                sprite.resize(props.textSize.second);
+                for (int i = 0; i < props.textSize.second; i++) {
+                    sprite[i] = (*texture)[i + props.textOffset.second].substr(props.textOffset.first, props.textSize.first);
+                }
                 if (_ncurses.hasColors()) {
                     short colorNum = this->getNearestColor(props.textColor);
                     switch (colorNum) {
@@ -133,13 +134,12 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
                     default: colorPair = 1; break;
                     }
                 }
-
-                _ncurses.drawChar(termY, termX, displayChar, colorPair);
+                for (const auto& line : sprite)
+                    this->_ncurses.drawString(termY, termX, line, colorPair);
             }
             else if (object->getType() == TEXT) {
                 IObject::TextProperties props = std::get<IObject::TextProperties>(object->getProperties());
                 std::string displayText = props.text;
-
                 if (_ncurses.hasColors()) {
                     short colorNum = this->getNearestColor(props.color);
                     switch (colorNum) {
@@ -152,7 +152,6 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
                     default: colorPair = 1; break;
                     }
                 }
-
                 _ncurses.drawString(termY, termX, displayText, colorPair);
             }
         }
@@ -163,29 +162,25 @@ void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObjec
 
 void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     for (auto& [key, object] : objects) {
-        if (std::string(object->getSprite().type().name()) == "St10shared_ptrIcE" || std::string(object->getSprite().type().name()) == "St10shared_ptrINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE")
-            continue;
+//        if (std::string(object->getSprite().type().name()) == "St10shared_ptrIcE" || std::string(object->getSprite().type().name()) == "St10shared_ptrINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE")
+//            continue;
         if (object->getType() == SPRITE) {
-            char spriteChar = '#';
-            // Modification du chemin pour correspondre au format des autres modules
+            auto texture = std::make_shared<std::vector<std::string>>();
             std::string filePath = "./assets/" + object->getTexturePath() + ".txt";
             std::ifstream file(filePath);
             if (file.is_open()) {
                 std::string line;
-                if (std::getline(file, line) && !line.empty()) {
-                    spriteChar = line[0];
+                while (std::getline(file, line)) {
+                    texture->push_back(line);
                 }
                 file.close();
             } else {
                 std::cerr << "Failed to load text file: " << filePath << std::endl;
             }
-            auto spritePtr = std::make_shared<char>(spriteChar);
-            object->setTexture(std::make_shared<std::string>(object->getTexturePath()));
-            object->setSprite(spritePtr);
+            object->setTexture(texture);
         }
         else if (object->getType() == TEXT) {
             auto textStr = std::make_shared<std::string>("");
-            object->setTexture(std::make_shared<std::string>(object->getTexturePath()));
             object->setSprite(textStr);
             auto props = std::get<IObject::TextProperties>(object->getProperties());
 

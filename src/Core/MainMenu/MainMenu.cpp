@@ -20,7 +20,9 @@ Arcade::MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const
     this->_objects["selector"]->setPosition({150, 300});
     auto spriteProperties = std::get<IObject::SpriteProperties>(this->_objects["selector"]->getProperties());
     spriteProperties.offset = {0, 0};
+    spriteProperties.textOffset = {0, 0};
     spriteProperties.size = {50, 50};
+    spriteProperties.textSize = {1, 1};
     this->_objects["selector"]->setProperties(spriteProperties);
 
     this->addTextObject("playerName", {200, 500}, USERNAME_SIZE, "", WHITE);
