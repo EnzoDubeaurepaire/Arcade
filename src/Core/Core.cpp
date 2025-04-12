@@ -48,31 +48,6 @@ Arcade::IDisplayModule& Arcade::Core::getDisplay(const std::string& name) {
     return *(this->_displayModules[name].second);
 }
 
-bool Arcade::Core::isLibLoaded(const std::string &name) {
-    if (name == "Main Menu")
-        return true;
-    if (this->_gameModules.contains(name)) {
-        return this->_gameModules[name].first->isLoaded();
-    }
-    if (this->_displayModules.contains(name)) {
-        return this->_displayModules[name].first->isLoaded();
-    }
-    return false;
-}
-
-void Arcade::Core::getDisplayFallback() {
-    if (this->_displayModules.empty())
-        throw CoreException("No display modules found");
-    this->loadDisplay(this->_displayModules.begin()->first);
-}
-
-void Arcade::Core::getGameFallback() const {
-    if (this->_gameModules.empty()) {
-        *this->_loadedGame = "Main Menu";
-    } else
-        this->loadGame(this->_gameModules.begin()->first);
-}
-
 void Arcade::Core::updateLibraries() {
     if (!std::filesystem::exists("./lib") || !std::filesystem::is_directory("./lib")) {
         throw CoreException("Libraries not found");
@@ -156,7 +131,13 @@ void Arcade::Core::updateLoadedGame() {
             throw CoreException(e.what());
         }
     }
-    if (this->getGame(*this->_loadedGame).update(this->_mousePos, this->_input)) {
+    const std::string oldLoadedDisplay = *this->_loadedDisplay;
+    const bool updateGame = this->getGame(*this->_loadedGame).update(this->_mousePos, this->_input);
+    if (oldLoadedDisplay != *this->_loadedDisplay) {
+        this->unloadDisplay(oldLoadedDisplay);
+        this->loadDisplay(*this->_loadedDisplay);
+    }
+    if (updateGame) {
         this->unloadGame(*this->_loadedGame);
         this->loadGame("Main Menu");
     }
