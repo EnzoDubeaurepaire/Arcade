@@ -84,9 +84,9 @@ namespace Arcade {
         void updateSnake();
 
         bool collideWall();
-        void checkApples();
+        bool checkApples();
 
-        void addSnakePart();
+        bool addSnakePart();
 
         void initScore();
         void updateScore();

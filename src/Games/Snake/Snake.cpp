@@ -14,7 +14,7 @@
 
 
 Arcade::Snake::Snake() : _gen(_rd()), _distrib(1, BOARD_SIZE - 1) {
-    this->_snakeSize = 3;
+    this->_snakeSize = 1;
     this->initSnake();
     this->initWalls();
     this->initApples();
@@ -111,16 +111,18 @@ bool Arcade::Snake::collideWall() {
     return true;
 }
 
-void Arcade::Snake::checkApples() {
+bool Arcade::Snake::checkApples() {
     for (auto& object : this->_objects)
         if (object.first.starts_with("apple"))
             if (object.second->getPosition() == this->_objects["snake1"]->getPosition()) {
                 this->createApple(object.first.back() - '0');
-                this->addSnakePart();
+                if (this->addSnakePart())
+                    return true;
             }
+    return false;
 }
 
-void Arcade::Snake::addSnakePart() {
+bool Arcade::Snake::addSnakePart() {
     std::pair<int, int> tailPos = this->_objects["snake" + std::to_string(this->_snakeSize)]->getPosition();
 
     std::vector<std::pair<int, int>> possiblePos;
@@ -135,7 +137,9 @@ void Arcade::Snake::addSnakePart() {
                 valid[i] = false;
     }
     int n = 0;
-    for (; !valid[n]; n++) {}
+    for (; !valid[n] && n < 4; n++) {}
+    if (n == 4)
+        return true;
     const std::pair<int, int> newPos = possiblePos[n];
     const std::string newName = "snake" + std::to_string(this->_snakeSize + 1);
     this->_objects[newName] = std::make_unique<Sprite>("Snake/Snake");
@@ -150,15 +154,27 @@ void Arcade::Snake::addSnakePart() {
     properties.textOffset.second /= 4;
     this->_objects[newName]->setProperties(properties);
     this->_snakeSize++;
+    return false;
 }
 
 bool Arcade::Snake::update(std::pair<int, int> mousePos, int input) {
     (void)mousePos;
+    if (input == 'r') {
+        this->_objects.clear();
+        this->_score = _snakeSize;
+        this->_snakeSize = 1;
+        this->initSnake();
+        this->initWalls();
+        this->initApples();
+        this->startClock();
+        this->initScore();
+        return false;
+    }
     this->moveSnake(input);
     if (this->collideWall()) {
         this->_objects.clear();
         this->_score = _snakeSize;
-        this->_snakeSize = 3;
+        this->_snakeSize = 1;
         this->initSnake();
         this->initWalls();
         this->initApples();
@@ -166,7 +182,8 @@ bool Arcade::Snake::update(std::pair<int, int> mousePos, int input) {
         this->initScore();
         return true;
     }
-    this->checkApples();
+    if (this->checkApples())
+        return true;
     this->updateSnake();
     this->updateScore();
     return false;
@@ -185,29 +202,9 @@ void Arcade::Snake::initSnake() {
     properties.textOffset.second /= 4;
     this->_objects["snake1"]->setProperties(properties);
 
-    this->_objects["snake2"] = std::make_unique<Sprite>("Snake/Snake");
-    this->_objects["snake2"]->setPosition({ASSET_SIZE * (BOARD_SIZE / 2 + 1), ASSET_SIZE * (BOARD_SIZE / 2 + 1)});
-    properties = std::get<IObject::SpriteProperties>(this->_objects["snake2"]->getProperties());
-    properties.offset = BODY_HORIZONTAL;
-    properties.size = {ASSET_SIZE, ASSET_SIZE};
-    properties.textColor = COLOR(255, 0, 255, 0);
-    properties.textSize = {ASSET_SIZE / 4, ASSET_SIZE / 4};
-    properties.textOffset = BODY_HORIZONTAL;
-    properties.textOffset.first /= 4;
-    properties.textOffset.second /= 4;
-    this->_objects["snake2"]->setProperties(properties);
-
-    this->_objects["snake3"] = std::make_unique<Sprite>("Snake/Snake");
-    this->_objects["snake3"]->setPosition({ASSET_SIZE * (BOARD_SIZE / 2), ASSET_SIZE * (BOARD_SIZE / 2 + 1)});
-    properties = std::get<IObject::SpriteProperties>(this->_objects["snake3"]->getProperties());
-    properties.offset = TAIL_RIGHT;
-    properties.size = {ASSET_SIZE, ASSET_SIZE};
-    properties.textColor = COLOR(255, 0, 255, 0);
-    properties.textSize = {ASSET_SIZE / 4, ASSET_SIZE / 4};
-    properties.textOffset = TAIL_RIGHT;
-    properties.textOffset.first /= 4;
-    properties.textOffset.second /= 4;
-    this->_objects["snake3"]->setProperties(properties);
+    this->addSnakePart();
+    this->addSnakePart();
+    this->addSnakePart();
 }
 
 void Arcade::Snake::createWall(std::pair<int, int> pos, int nb) {

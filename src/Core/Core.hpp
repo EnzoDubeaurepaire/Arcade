@@ -25,7 +25,7 @@ namespace Arcade {
         {
         public:
             explicit CoreException(const std::string &what) : message("Core error : " + what) {};
-            const char* what() const noexcept override {return this->message.c_str();};
+            [[nodiscard]] const char* what() const noexcept override {return this->message.c_str();};
         private:
             std::string message;
         };
@@ -34,7 +34,6 @@ namespace Arcade {
         ~Core() = default;
         IGameModule& getGame(const std::string& name);
         IDisplayModule& getDisplay(const std::string& name);
-        bool isLibLoaded(const std::string& name);
         void updateLibraries();
         void run();
 
@@ -53,8 +52,6 @@ namespace Arcade {
         void unloadGame(const std::string& name);
         void loadDisplay(const std::string& name);
         void unloadDisplay(const std::string& name);
-        void getDisplayFallback();
-        void getGameFallback() const;
         void handleInputs();
         void goToNextDisplay();
         void goToNextGame();

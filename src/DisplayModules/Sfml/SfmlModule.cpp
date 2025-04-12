@@ -24,8 +24,11 @@ int Arcade::SfmlModule::getInput() {
                 return K_UP;
             if (event.key.code == sf::Keyboard::Down)
                 return K_DOWN;
-            if (event.key.code >= sf::Keyboard::A && event.key.code <= sf::Keyboard::Z)
+            if (event.key.code >= sf::Keyboard::A && event.key.code <= sf::Keyboard::Z) {
+                if (event.key.control)
+                    return CTRL(event.key.code + 'a');
                 return event.key.code + 'a';
+            }
             if (event.key.code == sf::Keyboard::Backspace)
                 return K_BACKSPACE;
             if (event.key.code == sf::Keyboard::Enter)

@@ -25,7 +25,7 @@ DISPLAY_LIBS	=	src/DisplayModules/Sfml \
 			        src/DisplayModules/Sdl \
 
 CXXFLAGS	+=	-Wall -Wextra -Werror
-CXXFLAGS	+=	-fno-gnu-unique -std=c++20 -ldl
+CXXFLAGS	+=	-fno-gnu-unique -std=c++20 -ldl -fPIC
 CXXFLAGS	+=	-I./src/Loader -I./src/Games -I./src/DisplayModules -I./src/Core -I./src/Core/MainMenu -I./src/Core/Objects
 
 ifeq ($(DEBUG),1)
