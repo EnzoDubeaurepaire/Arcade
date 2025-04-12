@@ -31,7 +31,10 @@ namespace Arcade {
         };
 
         explicit Core(const std::string& baseDisplay);
-        ~Core() = default;
+        ~Core() {
+            _gameModules.clear();
+            _displayModules.clear();
+        };
         IGameModule& getGame(const std::string& name);
         IDisplayModule& getDisplay(const std::string& name);
         void updateLibraries();

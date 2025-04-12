@@ -4,6 +4,8 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
+
 #include "KeyCodes.hpp"
 #include "IDisplayModule.hpp"
 #include "NcursesWrapper.hpp"
@@ -33,6 +35,9 @@ namespace Arcade {
         int _termHeight;
         int _gameWidth;
         int _gameHeight;
+
+        std::vector<std::shared_ptr<std::string>> _textList;
+        std::vector<std::shared_ptr<std::vector<std::string>>> _spriteList;
     };
 }
 

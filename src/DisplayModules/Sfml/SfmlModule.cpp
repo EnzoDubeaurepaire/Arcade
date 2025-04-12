@@ -81,6 +81,10 @@ void Arcade::SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObjec
     for (auto& object : objects) {
         if (std::string(object.second->getSprite().type().name()) == "St10shared_ptrIN2sf6SpriteEE" || std::string(object.second->getSprite().type().name()) == "St10shared_ptrIN2sf4TextEE")
             continue;
+        if (object.second->getSprite().has_value())
+            object.second->getSprite().reset();
+        if (object.second->getTexture().has_value())
+            object.second->getTexture().reset();
         if (object.second->getType() == SPRITE) {
             auto texture = std::make_shared<sf::Texture>();
             texture->loadFromFile("./assets/" + object.second->getTexturePath() + ".png");
@@ -88,6 +92,8 @@ void Arcade::SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObjec
             sprite->setTexture(*texture);
             object.second->setTexture(texture);
             object.second->setSprite(sprite);
+            this->_textureList.push_back(texture);
+            this->_spriteList.push_back(sprite);
         }
         if (object.second->getType() == TEXT) {
             auto font = std::make_shared<sf::Font>();
@@ -96,6 +102,8 @@ void Arcade::SfmlModule::initObject(std::map<std::string, std::unique_ptr<IObjec
             text->setFont(*font);
             object.second->setTexture(font);
             object.second->setSprite(text);
+            this->_fontList.push_back(font);
+            this->_textList.push_back(text);
         }
     }
 }

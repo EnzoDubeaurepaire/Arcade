@@ -23,9 +23,7 @@ short Arcade::NcursesModule::getNearestColor(u_int32_t color) {
 Arcade::NcursesModule::NcursesModule() : _isOpen(false),
                                          _gameWidth(1920), _gameHeight(1080) {}
 
-Arcade::NcursesModule::~NcursesModule() {
-    this->closeWindow();
-}
+Arcade::NcursesModule::~NcursesModule() = default;
 
 int Arcade::NcursesModule::getInput() {
     if (!_isOpen)
@@ -164,6 +162,10 @@ void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IOb
     for (auto& [key, object] : objects) {
         if (std::string(object->getSprite().type().name()) == "St10shared_ptrINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE" || std::string(object->getTexture().type().name()) == "St10shared_ptrISt6vectorINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESaIS6_EEE")
             continue;
+        if (object->getSprite().has_value())
+            object->getSprite().reset();
+        if (object->getTexture().has_value())
+            object->getTexture().reset();
         if (object->getType() == SPRITE) {
             auto texture = std::make_shared<std::vector<std::string>>();
             std::string filePath = "./assets/" + object->getTexturePath() + ".txt";
@@ -177,13 +179,13 @@ void Arcade::NcursesModule::initObject(std::map<std::string, std::unique_ptr<IOb
             } else {
                 std::cerr << "Failed to load text file: " << filePath << std::endl;
             }
-            object->setSprite(std::any{});
             object->setTexture(texture);
+            this->_spriteList.push_back(texture);
         }
         else if (object->getType() == TEXT) {
             auto textStr = std::make_shared<std::string>("");
             object->setSprite(textStr);
-            object->setTexture(std::any{});
+            this->_textList.push_back(textStr);
             auto props = std::get<IObject::TextProperties>(object->getProperties());
 
             if (props.text.empty() && key != "selector") {
