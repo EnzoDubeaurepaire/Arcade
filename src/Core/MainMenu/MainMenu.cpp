@@ -65,9 +65,11 @@ void Arcade::MainMenu::clearScoreboard() {
             keys.push_back(key);
         }
     }
+
     for (const auto& key : keys) {
         _objects.erase(key);
     }
+
     _scoreboardActive = false;
     _currentGameScoreboard = "";
 }
@@ -77,10 +79,11 @@ void Arcade::MainMenu::updateScoreboard() {
 
     if (_games.empty() || _selectedGame < 0 || _selectedGame >= static_cast<int>(_games.size()))
         return;
+
     std::string selectedGame = _games[_selectedGame];
     _currentGameScoreboard = selectedGame;
     int verticalLineX = 1400;
-    for (int i = 0; i < 300; i++) {
+    for (int i = 0; i < 200; i++) {
         addScoreboardTextObject("separator_" + std::to_string(i), {verticalLineX, 10 + i * 10}, 20, "|", WHITE);
     }
     std::vector<ScoreEntry> filteredScores;
@@ -91,11 +94,12 @@ void Arcade::MainMenu::updateScoreboard() {
     }
     std::sort(filteredScores.begin(), filteredScores.end(),
         [](const ScoreEntry& a, const ScoreEntry& b) { return a.score > b.score; });
+
     int scoreboardX = 1480;
     addScoreboardTextObject("title", {scoreboardX, 100}, 24, "High Scores", WHITE);
-    size_t maxToShow = std::min(static_cast<size_t>(0), filteredScores.size());
+    size_t maxToShow = std::min(static_cast<size_t>(10), filteredScores.size());
     for (size_t i = 0; i < maxToShow; i++) {
-        int baseYPos = 160 + static_cast<int>(i) * 80;
+        int baseYPos = 160 + static_cast<int>(i) * 60;
         addScoreboardTextObject(
             "score_player_" + std::to_string(i),
             {scoreboardX, baseYPos},
@@ -119,7 +123,6 @@ void Arcade::MainMenu::updateScoreboard() {
 
 bool Arcade::MainMenu::update(std::pair<int, int> pos, int input) {
     (void)pos;
-
     std::vector<std::string> toRemove;
     for (const auto& [key, _] : this->_objects) {
         if (std::find(this->_display.begin(), this->_display.end(), key) == this->_display.end() &&
@@ -129,13 +132,12 @@ bool Arcade::MainMenu::update(std::pair<int, int> pos, int input) {
             toRemove.push_back(key);
         }
     }
-
     for (const auto& key : toRemove) {
         this->_objects.erase(key);
     }
+
     this->updateDisplayText();
     this->updateGamesText();
-
     switch (input) {
     case 0:
         break;
