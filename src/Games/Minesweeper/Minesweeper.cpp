@@ -248,18 +248,17 @@ void Minesweeper::gameOver(bool won) {
         return;
     _gameState = won ? GameState::WON : GameState::LOST;
 
-    if (_score > _highScore)
-        _highScore = _score;
-
     if (won) {
-        int timeBonus = std::max(0, MAX_TIME - _elapsedTime);
-        _score += timeBonus;
+        _score += _elapsedTime;
 
         for (int y = 0; y < GRID_HEIGHT; ++y)
             for (int x = 0; x < GRID_WIDTH; ++x)
                 if (_board[y][x].hasMine && _board[y][x].state != CellState::FLAGGED)
                     _board[y][x].state = CellState::FLAGGED;
     }
+
+    if (_score > _highScore)
+        _highScore = _score;
 
     updateBoardDisplay();
     updateUIObjects();
