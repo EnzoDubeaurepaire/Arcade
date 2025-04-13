@@ -39,4 +39,3 @@ fclean:	clean
 	rm -rf ../../../lib/$(NAME)
 
 re:	fclean all
-

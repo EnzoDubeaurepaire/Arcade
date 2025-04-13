@@ -24,7 +24,7 @@ namespace Arcade {
         void initObject(std::map<std::string, std::unique_ptr<IObject>>&) override;
 
         int getInput() override;
-        std::pair<int, int> getMousePos() const override {return {0, 0};};
+        std::pair<int, int> getMousePos() const override {return _lastMousePos;};
 
         std::string getName() const override {return "SFML";};
 
@@ -39,6 +39,7 @@ namespace Arcade {
         std::vector<std::shared_ptr<sf::Texture>> _textureList;
         std::vector<std::shared_ptr<sf::Font>> _fontList;
         std::vector<std::shared_ptr<sf::Text>> _textList;
+        std::pair<int, int> _lastMousePos = {0, 0};
     };
 }
 
