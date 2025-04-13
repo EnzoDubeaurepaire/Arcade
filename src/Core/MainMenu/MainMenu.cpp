@@ -270,7 +270,7 @@ void Arcade::MainMenu::moveSelectorLeft() {
         _objects["selector"]->setPosition({x - 200, y});
         this->_selectorPos.first = 0;
         if (this->_selectorPos.second > static_cast<int>(this->_games.size()) - 1) {
-            _objects["selector"]->setPosition({x - 200, 300 + (200 * (this->_games.size() - 1))});
+            _objects["selector"]->setPosition({x - 200, 300 + (30 * (this->_games.size() - 1))});
             this->_selectorPos.second = this->_games.size() - 1;
         }
     }
@@ -282,7 +282,7 @@ void Arcade::MainMenu::moveSelectorRight() {
         _objects["selector"]->setPosition({x + 200, y});
         this->_selectorPos.first = 1;
         if (this->_selectorPos.second > static_cast<int>(this->_display.size()) - 1) {
-            _objects["selector"]->setPosition({x + 200, 300 - (200 * (this->_display.size() - 1))});
+            _objects["selector"]->setPosition({x + 200, 300 - (30 * (this->_display.size() - 1))});
             this->_selectorPos.second = this->_display.size() - 1;
         }
     }
