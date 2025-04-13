@@ -244,7 +244,12 @@ void Minesweeper::checkWinCondition() {
 }
 
 void Minesweeper::gameOver(bool won) {
+    if (_gameState != GameState::PLAYING)
+        return;
     _gameState = won ? GameState::WON : GameState::LOST;
+
+    if (_score > _highScore)
+        _highScore = _score;
 
     if (won) {
         int timeBonus = std::max(0, MAX_TIME - _elapsedTime);

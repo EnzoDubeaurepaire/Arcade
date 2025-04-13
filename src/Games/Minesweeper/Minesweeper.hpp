@@ -73,6 +73,7 @@ private:
     int _cellsRevealed = 0;
     bool _firstClick = true;
     size_t _score = 0;
+    size_t _highScore = 0;
     std::chrono::steady_clock::time_point _startTime;
     int _elapsedTime = 0;
     std::map<std::string, std::unique_ptr<IObject>> _objects;
@@ -134,7 +135,7 @@ public:
     bool update(std::pair<int, int> mousePos, int input) override;
     std::map<std::string, std::unique_ptr<IObject>>& getObjects() override { return _objects; }
     std::string getName() const override { return MINESWEEPER; }
-    std::size_t getScore() const override { return _score; }
+    std::size_t getScore() const override { return _highScore; }
 };
 
 }
