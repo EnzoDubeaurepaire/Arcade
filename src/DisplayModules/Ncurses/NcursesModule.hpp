@@ -25,7 +25,7 @@ namespace Arcade {
 
         void initObject(std::map<std::string, std::unique_ptr<IObject>>&) override;
         int getInput() override;
-        std::pair<int, int> getMousePos() const override {return {0, 0};};
+        std::pair<int, int> getMousePos() const override {return scaleTermToGame(_lastMousePos);};
         std::string getName() const override {return "NCURSES";};
 
         void openWindow() override;
@@ -34,6 +34,7 @@ namespace Arcade {
 
     private:
         std::pair<int, int> scaleCoords(int x, int y);
+        std::pair<int, int> scaleTermToGame(std::pair<int, int> termPos) const;
         short getNearestColor(u_int32_t color);
 
         NcursesWrapper _ncurses;
@@ -42,6 +43,7 @@ namespace Arcade {
         int _termHeight;
         int _gameWidth;
         int _gameHeight;
+        std::pair<int, int> _lastMousePos = {0, 0};
 
         std::vector<std::shared_ptr<std::string>> _textList;
         std::vector<std::shared_ptr<std::vector<std::string>>> _spriteList;

@@ -25,6 +25,8 @@ void Arcade::NcursesWrapper::initialize() {
     curs_set(0);
     timeout(50);
 
+    mousemask(ALL_MOUSE_EVENTS, NULL);
+
     if (has_colors()) {
         start_color();
     }

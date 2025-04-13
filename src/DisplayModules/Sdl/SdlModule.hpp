@@ -34,7 +34,7 @@ namespace Arcade {
 
         std::pair<int, int> getMousePos() const override
         {
-            return {0, 0};
+            return _lastMousePos;
         };
 
         std::string getName() const override
@@ -65,6 +65,7 @@ namespace Arcade {
 
         SdlWrapper _sdlWrapper;
         bool _isInitialized = false;
+        std::pair<int, int> _lastMousePos = {0, 0};
 
         std::map<std::string, std::unique_ptr<SdlResource>> _resources;
     };
