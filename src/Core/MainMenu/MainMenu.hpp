@@ -59,6 +59,7 @@ namespace Arcade {
         std::pair<int, int> _selectorPos;
         std::vector<ScoreEntry> _scoreEntries;
         std::string _currentGameScoreboard;
+        bool _scoreboardActive;
 
         void removeCharFromPlayer();
         void addCharToPlayer(char c);
