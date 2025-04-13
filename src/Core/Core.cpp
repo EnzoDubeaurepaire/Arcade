@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <thread>
+#include <chrono>
 
 #include "MainMenu.hpp"
 
@@ -159,41 +161,43 @@ void Arcade::Core::loadGame(const std::string &name) const {
 }
 
 void Arcade::Core::unloadGame(const std::string &name) {
-    const std::string toWrite = name + " " + dynamic_cast<MainMenu&>(this->getGame("Main Menu")).getPlayerName() + " " + std::to_string(this->getGame(*this->_loadedGame).getScore());
-    std::ofstream file(".save", std::ios::app);
+    if (name != "Main Menu" && *this->_loadedGame != "Main Menu") {
+        const std::string toWrite = name + " " + dynamic_cast<MainMenu&>(this->getGame("Main Menu")).getPlayerName() + " " + std::to_string(this->getGame(*this->_loadedGame).getScore());
+        std::ofstream file(".save", std::ios::app);
 
-    if (!file.is_open())
-        throw CoreException("Could not open save file.");
-    file << toWrite << std::endl;
-    file.close();
-}
+        if (!file.is_open())
+            throw CoreException("Could not open save file.");
+        file << toWrite << std::endl;
+        file.close();
 
-void Arcade::Core::loadDisplay(const std::string &name) {
-    if (!this->_displayModules.contains(name)) {
-        throw CoreException("Non existant display module");
-    }
-
-    if (name != "NCURSES") {
-        const char* display = std::getenv("DISPLAY");
-        if (!display || !*display || display[0] != ':' || display[1] == '\0' ||
-            !isdigit(display[1]) || display[2] != '\0') {
-            throw CoreException("Invalid DISPLAY");
+        try {
+            MainMenu& menu = dynamic_cast<MainMenu&>(this->getGame("Main Menu"));
+            menu.loadScores();
+            menu.updateScoreboard();
+        } catch (const std::bad_cast& e) {
+            std::cerr << "Failed to update scores: " << e.what() << std::endl;
         }
     }
-
-//    if (!this->_loadedDisplay->empty()) {
-//        unloadDisplay(*this->_loadedDisplay);
-//    }
-
-    *this->_loadedDisplay = name;
-    this->getDisplay(name).initObject(this->getGame(*this->_loadedGame).getObjects());
-    this->getDisplay(name).openWindow();
 }
 
 void Arcade::Core::unloadDisplay(const std::string &name) {
     if (this->_displayModules.contains(name)) {
         this->getDisplay(name).closeWindow();
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
+}
+
+void Arcade::Core::loadDisplay(const std::string &name) {
+    if (name.find("SDL") != std::string::npos) {
+        putenv((char*)"SDL_VIDEODRIVER=x11");
+        putenv((char*)"SDL_RENDER_DRIVER=software");
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+    *this->_loadedDisplay = name;
+    this->getDisplay(name).openWindow();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    this->getDisplay(name).initObject(this->getGame(*this->_loadedGame).getObjects());
 }
 
 void Arcade::Core::goToNextGame() {

@@ -17,11 +17,16 @@ Arcade::SdlModule::SdlResource::~SdlResource() {
 
 void Arcade::SdlModule::SdlResource::cleanup() {
     if (this->texture) {
-        SDL_DestroyTexture(this->texture);
+        if (SDL_WasInit(SDL_INIT_VIDEO)) {
+            SDL_DestroyTexture(this->texture);
+        }
         this->texture = nullptr;
     }
+
     if (this->font) {
-        TTF_CloseFont(this->font);
+        if (TTF_WasInit()) {
+            TTF_CloseFont(this->font);
+        }
         this->font = nullptr;
     }
 }
@@ -30,7 +35,7 @@ Arcade::SdlModule::SdlModule() = default;
 
 Arcade::SdlModule::~SdlModule() {
     _resources.clear();
-//    closeWindow();
+    closeWindow();
 }
 
 int Arcade::SdlModule::getInput() {
@@ -91,6 +96,7 @@ void Arcade::SdlModule::closeWindow() {
     if (!_isInitialized)
         return;
 
+    _resources.clear();
     _sdlWrapper.cleanup();
     _isInitialized = false;
 }
