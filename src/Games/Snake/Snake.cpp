@@ -93,6 +93,7 @@ void Arcade::Snake::updateSnake() {
         properties.textOffset = properties.offset;
         properties.textOffset.first /= 64;
         properties.textOffset.second /= 64;
+        properties.scale = {1, 1};
         this->_objects["snake" + std::to_string(i)]->setProperties(properties);
     }
 }
@@ -151,6 +152,7 @@ bool Arcade::Snake::addSnakePart() {
     properties.textOffset = HEAD_RIGHT;
     properties.textOffset.first /= 64;
     properties.textOffset.second /= 64;
+    properties.scale = {1, 1};
     this->_objects[newName]->setProperties(properties);
     this->_snakeSize++;
     return false;
