@@ -38,6 +38,8 @@ namespace Arcade {
 
         void updateGames(const std::vector<std::string>& games);
         void updateDisplay(const std::vector<std::string>& display);
+        void loadScores();
+        void updateScoreboard();
 
         std::string getPlayerName() {return _playerName;};
 
@@ -72,8 +74,6 @@ namespace Arcade {
         void moveSelectorDown();
         void select();
         void launch() const;
-        void loadScores();
-        void updateScoreboard();
         void clearScoreboard();
     };
 }
