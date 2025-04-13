@@ -92,7 +92,7 @@ void Arcade::Core::handleInputs() {
             this->_running = false;
             break;
         case K_ESC:
-            this->unloadGame(*this->_loadedDisplay);
+            this->unloadGame(*this->_loadedGame);
             this->loadGame("Main Menu");
             break;
         case CTRL('d'):
