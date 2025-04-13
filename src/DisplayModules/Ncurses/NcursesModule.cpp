@@ -38,11 +38,29 @@ int Arcade::NcursesModule::getInput() {
 
     int ch = _ncurses.getKeyInput();
 
+    if (ch == KEY_MOUSE) {
+        MEVENT event;
+        if (getmouse(&event) == OK) {
+            _lastMousePos = {event.x + 1, event.y + 1};
+            if (event.bstate & (BUTTON1_PRESSED | BUTTON1_CLICKED))
+                return K_LCLICK;
+            if (event.bstate & (BUTTON3_PRESSED | BUTTON3_CLICKED))
+                return K_RCLICK;
+            if (event.bstate & (BUTTON2_PRESSED | BUTTON2_CLICKED))
+                return K_MCLICK;
+        }
+        return 0;
+    }
+
     if (ch == ERR)
         return 0;
 
-    if (ch == CTRL('q') || ch == 17)
+    if (ch == CTRL('Q'))
         return CTRL('q');
+    if (ch == CTRL('D'))
+        return CTRL('d');
+    if (ch == CTRL('G'))
+        return CTRL('g');
 
     switch (ch) {
     case KEY_LEFT:
@@ -61,6 +79,10 @@ int Arcade::NcursesModule::getInput() {
         return '\n';
     case ' ':
         return ' ';
+    case K_ESC:
+        return K_ESC;
+    case 'r':
+        return 'r';
     default:
         if (ch >= 'a' && ch <= 'z')
             return ch;
@@ -74,6 +96,8 @@ void Arcade::NcursesModule::openWindow() {
     _ncurses.initialize();
     _ncurses.getTerminalSize(_termWidth, _termHeight);
     _isOpen = true;
+
+    mousemask(ALL_MOUSE_EVENTS, NULL);
 
     if (_ncurses.hasColors()) {
         _ncurses.initColor(1, COLOR_WHITE, COLOR_BLACK);
@@ -103,10 +127,21 @@ std::pair<int, int> Arcade::NcursesModule::scaleCoords(int x, int y) {
     return {termX, termY};
 }
 
+std::pair<int, int> Arcade::NcursesModule::scaleTermToGame(std::pair<int, int> termPos) const {
+    double percentX = static_cast<double>(termPos.first) / _termWidth;
+    double percentY = static_cast<double>(termPos.second) / _termHeight;
+
+    int gameX = static_cast<int>(percentX * _gameWidth);
+    int gameY = static_cast<int>(percentY * _gameHeight);
+
+    return {gameX, gameY};
+}
+
 void Arcade::NcursesModule::display(std::map<std::string, std::unique_ptr<IObject>>& objects) {
     if (!_isOpen)
         return;
 
+    _ncurses.getTerminalSize(_termWidth, _termHeight);
     _ncurses.clear();
 
     for (auto& [key, object] : objects) {

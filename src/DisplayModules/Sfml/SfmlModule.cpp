@@ -35,6 +35,27 @@ int Arcade::SfmlModule::getInput() {
                 return '\n';
             if (event.key.code == sf::Keyboard::Space)
                 return ' ';
+            if (event.key.code == sf::Keyboard::Escape)
+                return K_ESC;
+            if (event.key.code == sf::Keyboard::R)
+                return 'r';
+        }
+
+        if (event.type == sf::Event::MouseButtonPressed) {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(*_window);
+            _lastMousePos = {mousePos.x, mousePos.y};
+
+            if (event.mouseButton.button == sf::Mouse::Left)
+                return K_LCLICK;
+            if (event.mouseButton.button == sf::Mouse::Right)
+                return K_RCLICK;
+            if (event.mouseButton.button == sf::Mouse::Middle)
+                return K_MCLICK;
+        }
+
+        if (event.type == sf::Event::MouseMoved) {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(*_window);
+            _lastMousePos = {mousePos.x, mousePos.y};
         }
     }
     return 0;
@@ -62,6 +83,10 @@ void Arcade::SfmlModule::display(std::map<std::string, std::unique_ptr<IObject>>
                 std::get<IObject::SpriteProperties>(object.second->getProperties()).size.first,
                 std::get<IObject::SpriteProperties>(object.second->getProperties()).size.second);
             sprite->setTextureRect(rect);
+
+            auto props = std::get<IObject::SpriteProperties>(object.second->getProperties());
+            sprite->setScale(props.scale.first, props.scale.second);
+
             this->_window->draw(*sprite);
         }
         if (object.second->getType() == TEXT) {

@@ -46,6 +46,13 @@ int Arcade::SdlModule::getInput() {
             return CTRL('q');
 
         if (event.type == SDL_KEYDOWN) {
+            if (event.key.keysym.mod & KMOD_CTRL) {
+                if (event.key.keysym.sym == SDLK_d)
+                    return CTRL('d');
+                if (event.key.keysym.sym == SDLK_g)
+                    return CTRL('g');
+            }
+
             if (event.key.keysym.sym == SDLK_LEFT)
                 return K_LEFT;
             if (event.key.keysym.sym == SDLK_RIGHT)
@@ -62,6 +69,25 @@ int Arcade::SdlModule::getInput() {
                 return '\n';
             if (event.key.keysym.sym == SDLK_SPACE)
                 return ' ';
+            if (event.key.keysym.sym == SDLK_ESCAPE)
+                return K_ESC;
+            if (event.key.keysym.sym == SDLK_r)
+                return 'r';
+        }
+
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
+            _lastMousePos = {event.button.x, event.button.y};
+
+            if (event.button.button == SDL_BUTTON_LEFT)
+                return K_LCLICK;
+            if (event.button.button == SDL_BUTTON_RIGHT)
+                return K_RCLICK;
+            if (event.button.button == SDL_BUTTON_MIDDLE)
+                return K_MCLICK;
+            }
+
+        if (event.type == SDL_MOUSEMOTION) {
+            _lastMousePos = {event.motion.x, event.motion.y};
         }
     }
     return 0;
@@ -133,8 +159,9 @@ void Arcade::SdlModule::display(std::map<std::string, std::unique_ptr<Arcade::IO
                 SDL_Rect dstRect;
                 dstRect.x = object.second->getPosition().first;
                 dstRect.y = object.second->getPosition().second;
-                dstRect.w = props.size.first;
-                dstRect.h = props.size.second;
+
+                dstRect.w = static_cast<int>(props.size.first * props.scale.first);
+                dstRect.h = static_cast<int>(props.size.second * props.scale.second);
 
                 SDL_RenderCopy(_sdlWrapper.getRenderer(), resource->texture, &srcRect, &dstRect);
             }
