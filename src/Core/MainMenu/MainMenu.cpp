@@ -18,7 +18,7 @@ Arcade::MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const
     this->_currentGameScoreboard = "";
 
     this->_objects["selector"] = std::make_unique<Sprite>("MainMenu/MainMenu");
-    this->_objects["selector"]->setPosition({150, 300});
+    this->_objects["selector"]->setPosition({150, 285});
     auto spriteProperties = std::get<IObject::SpriteProperties>(this->_objects["selector"]->getProperties());
     spriteProperties.offset = {0, 0};
     spriteProperties.textOffset = {0, 0};
@@ -270,7 +270,7 @@ void Arcade::MainMenu::moveSelectorLeft() {
         _objects["selector"]->setPosition({x - 200, y});
         this->_selectorPos.first = 0;
         if (this->_selectorPos.second > static_cast<int>(this->_games.size()) - 1) {
-            _objects["selector"]->setPosition({x - 200, y - (200 * (this->_selectorPos.second - this->_games.size()))});
+            _objects["selector"]->setPosition({x - 200, 285 + (200 * (this->_games.size() - 1))});
             this->_selectorPos.second = this->_games.size() - 1;
         }
     }
@@ -282,7 +282,7 @@ void Arcade::MainMenu::moveSelectorRight() {
         _objects["selector"]->setPosition({x + 200, y});
         this->_selectorPos.first = 1;
         if (this->_selectorPos.second > static_cast<int>(this->_display.size()) - 1) {
-            _objects["selector"]->setPosition({x + 200, y - (200 * (this->_selectorPos.second - this->_display.size()))});
+            _objects["selector"]->setPosition({x + 200, 285 - (200 * (this->_display.size() - 1))});
             this->_selectorPos.second = this->_display.size() - 1;
         }
     }
