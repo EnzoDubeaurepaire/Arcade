@@ -38,7 +38,26 @@ void Arcade::NcursesWrapper::initialize() {
 void Arcade::NcursesWrapper::cleanup() {
     if (!_isInitialized)
         return;
+    if (has_colors()) {
+        for (int i = 1; i < COLOR_PAIRS; i++) {
+            init_pair(i, COLOR_WHITE, COLOR_BLACK);
+        }
+    }
+    use_default_colors();
+    clear();
+    refresh();
+    mousemask(0, NULL);
+    curs_set(1);
+    echo();
+    nocbreak();
+    keypad(stdscr, FALSE);
     endwin();
+    #ifdef NCURSES_INTERNALS
+    if (cur_term != NULL) {
+            del_curterm(cur_term);
+        }
+        set_curterm(NULL);
+    #endif
     _isInitialized = false;
 }
 
