@@ -55,11 +55,11 @@ int Arcade::NcursesModule::getInput() {
     if (ch == ERR)
         return 0;
 
-    if (ch == CTRL('q') || ch == 17)
+    if (ch == CTRL('Q'))
         return CTRL('q');
-    if (ch == CTRL('d'))
+    if (ch == CTRL('D'))
         return CTRL('d');
-    if (ch == CTRL('g'))
+    if (ch == CTRL('G'))
         return CTRL('g');
 
     switch (ch) {
@@ -79,7 +79,7 @@ int Arcade::NcursesModule::getInput() {
         return '\n';
     case ' ':
         return ' ';
-    case 27:
+    case K_ESC:
         return K_ESC;
     case 'r':
         return 'r';
