@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Arcade
+** File description:
+** NcursesModule
+*/
+
 #include "NcursesModule.hpp"
 #include <iostream>
 #include <fstream>

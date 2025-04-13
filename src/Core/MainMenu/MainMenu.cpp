@@ -9,7 +9,6 @@
 
 #include <iostream>
 
-
 Arcade::MainMenu::MainMenu(const std::shared_ptr<std::string>& loadedGame, const std::shared_ptr<std::string>& loadedDisplay) {
     this->_loadedGame = loadedGame;
     this->_loadedDisplay = loadedDisplay;
@@ -41,7 +40,6 @@ void Arcade::MainMenu::updateGamesText() {
             this->addTextObject(this->_games[i], {200, 300 + 30 * i}, 16, this->_games[i], WHITE);
     }
 }
-
 
 bool Arcade::MainMenu::update(std::pair<int, int> pos, int input) {
     (void)pos;

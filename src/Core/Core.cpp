@@ -121,7 +121,6 @@ std::vector<std::string> Arcade::Core::getGamesList() const {
     return vec;
 }
 
-
 void Arcade::Core::updateLoadedGame() {
     if (*this->_loadedGame == "Main Menu") {
         try {
@@ -142,7 +141,6 @@ void Arcade::Core::updateLoadedGame() {
         this->loadGame("Main Menu");
     }
 }
-
 
 void Arcade::Core::run() {
     while (this->_running) {

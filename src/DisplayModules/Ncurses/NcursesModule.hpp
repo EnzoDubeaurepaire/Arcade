@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Arcade
+** File description:
+** NcursesModule
+*/
+
 #ifndef NCURSESMODULE_H_
 #define NCURSESMODULE_H_
 

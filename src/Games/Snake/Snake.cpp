@@ -12,7 +12,6 @@
 #include "Sprite.hpp"
 #include "Text.hpp"
 
-
 Arcade::Snake::Snake() : _gen(_rd()), _distrib(1, BOARD_SIZE - 1) {
     this->_snakeSize = 1;
     this->initSnake();
@@ -354,7 +353,6 @@ std::pair<int, int> Arcade::Snake::getSnakePartType(int snakePart) {
         return CORNER_DOWN_RIGHT;
     return BODY_HORIZONTAL;
 }
-
 
 extern "C" {
     std::unique_ptr<Arcade::IGameModule> createInstanceIGame() {

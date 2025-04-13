@@ -34,4 +34,3 @@ bool Arcade::DynamicLibrary::isLoaded() {
     this->handle = nullptr;
     return false;
 }
-

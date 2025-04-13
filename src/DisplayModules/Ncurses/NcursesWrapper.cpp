@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Arcade
+** File description:
+** NcursesWrapper
+*/
+
 #include "NcursesWrapper.hpp"
 
 Arcade::NcursesWrapper::NcursesWrapper() : _window(nullptr), _isInitialized(false) {}

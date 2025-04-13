@@ -23,7 +23,6 @@
 #include "Text.hpp"
 #include "IObject.hpp"
 
-
 namespace Arcade {
     class MainMenu final : public IGameModule {
     public:
@@ -39,8 +38,6 @@ namespace Arcade {
         void updateDisplay(const std::vector<std::string>& display);
 
         std::string getPlayerName() {return _playerName;};
-
-
 
     private:
         std::map<std::string, std::unique_ptr<IObject>> _objects;

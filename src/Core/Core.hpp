@@ -40,7 +40,6 @@ namespace Arcade {
         void updateLibraries();
         void run();
 
-
     private:
         bool _running = true;
         std::vector<std::string> _libraries;

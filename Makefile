@@ -18,7 +18,8 @@ CORE_SRC	=	src/main.cpp \
 
 OBJ		=	$(CORE_SRC:.cpp=.o)
 
-GAME_LIBS	=	src/Games/Snake
+GAME_LIBS	=	src/Games/Snake \
+#			src/Games/Minesweeper
 
 DISPLAY_LIBS	=	src/DisplayModules/Sfml \
 			        src/DisplayModules/Ncurses \

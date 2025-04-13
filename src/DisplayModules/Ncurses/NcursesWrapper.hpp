@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** Arcade
+** File description:
+** NcursesWrapper
+*/
+
 #ifndef NCURSES_WRAPPER_H_
 #define NCURSES_WRAPPER_H_
 
