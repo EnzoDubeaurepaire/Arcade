@@ -28,6 +28,8 @@ int main(int ac, char **av) {
                   << "    Arrow Keys: Control the snake's movement\n\n"
                   << "Example:\n"
                   << "  ./arcade ./lib/sfml_display.so\n";
+        if (ac == 2)
+            return EXIT_SUCCESS;
         return EXIT_FAILURE;
     }
     try {
@@ -35,6 +37,7 @@ int main(int ac, char **av) {
         core.run();
     } catch (const Arcade::Core::CoreException& e) {
         std::cerr << e.what() << std::endl;
+        return 84;
     }
     return 0;
 }
