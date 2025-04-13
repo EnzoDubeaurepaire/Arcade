@@ -78,8 +78,8 @@
 
 // Mouse events
 #define K_RCLICK     342 /* Right-click mouse button */
-#define K_LCLICK     343 /* Left-click mouse button */
-#define K_MCLICK     344 /* Middle-click mouse button */
+#define K_LCLICK     344 /* Left-click mouse button */
+#define K_MCLICK     339 /* Middle-click mouse button */
 #define K_MOTION     345 /* Mouse motion */
 #define K_MOUSE      346 /* Mouse event */
 

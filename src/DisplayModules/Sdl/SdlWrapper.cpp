@@ -128,7 +128,7 @@ bool SdlWrapper::createRenderer()
     }
 
     // Forcer le rendu logiciel
-    this->_renderer = SDL_CreateRenderer(this->_window, -1, SDL_RENDERER_SOFTWARE);
+    this->_renderer = SDL_CreateRenderer(this->_window, -1, SDL_RENDERER_ACCELERATED);
 
     if (!this->_renderer) {
         std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
