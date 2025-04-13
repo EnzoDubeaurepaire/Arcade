@@ -118,7 +118,6 @@ void Arcade::MainMenu::updateScoreboard() {
     if (filteredScores.empty()) {
         addScoreboardTextObject("empty", {scoreboardX, 160}, 18, "No scores yet", WHITE);
     }
-
     _scoreboardActive = true;
 }
 
@@ -209,8 +208,6 @@ void Arcade::MainMenu::updateGames(const std::vector<std::string> &games) {
     }
 
     this->_games = games;
-
-    // Si les jeux ont changé et qu'un scoreboard est affiché, le réinitialiser
     if (gamesChanged && _scoreboardActive) {
         clearScoreboard();
     }
