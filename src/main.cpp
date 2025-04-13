@@ -26,6 +26,9 @@ int main(int ac, char **av) {
                   << "    Enter     : Launch the selected game\n\n"
                   << "  Snake Game:\n"
                   << "    Arrow Keys: Control the snake's movement\n\n"
+                  << "  Minesweeper Game:\n"
+                  << "    Left Click: Reveal cell\n"
+                  << "    Right Click: Flag cell\n\n"
                   << "Example:\n"
                   << "  ./arcade ./lib/sfml_display.so\n";
         if (ac == 2)
