@@ -15,6 +15,8 @@
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
 
 #include "IGameModule.hpp"
 #include "Sprite.hpp"
@@ -40,9 +42,12 @@ namespace Arcade {
 
         std::string getPlayerName() {return _playerName;};
 
-
-
     private:
+        struct ScoreEntry {
+            std::string game;
+            std::string player;
+            int score;
+        };
         std::map<std::string, std::unique_ptr<IObject>> _objects;
         std::string _playerName;
         std::shared_ptr<std::string> _loadedGame;
@@ -52,10 +57,14 @@ namespace Arcade {
         std::vector<std::string> _display;
         std::pair<std::size_t, std::size_t> _cursorPos;
         std::pair<int, int> _selectorPos;
+        std::vector<ScoreEntry> _scoreEntries;
+        std::string _currentGameScoreboard;
+        bool _scoreboardActive;
 
         void removeCharFromPlayer();
         void addCharToPlayer(char c);
         void addTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, u_int32_t color);
+        void addScoreboardTextObject(const std::string& name, std::pair<int, int> pos, int size, const std::string& text, u_int32_t color);
         void updateDisplayText();
         void updateGamesText();
         void moveSelectorLeft();
@@ -64,6 +73,9 @@ namespace Arcade {
         void moveSelectorDown();
         void select();
         void launch() const;
+        void loadScores();
+        void updateScoreboard();
+        void clearScoreboard();
     };
 }
 
